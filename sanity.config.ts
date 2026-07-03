@@ -1,7 +1,7 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
-import { settings, gallerySection, collection } from './sanity/schemas';
+import { settings, gallerySection } from './sanity/schemas';
 
 export default defineConfig({
   name: 'sneha-portfolio',
@@ -11,6 +11,6 @@ export default defineConfig({
   basePath: '/studio',
   plugins: [structureTool(), visionTool()],
   schema: {
-    types: [settings, gallerySection, collection],
+    types: [settings, gallerySection],
   },
 });

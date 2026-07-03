@@ -6,7 +6,7 @@ import styles from './Nav.module.css';
 const links = [
   { href: '#about', label: 'About' },
   { href: '#gallery', label: 'Work' },
-  { href: '#collections', label: 'Collections' },
+  { href: '#philosophy', label: 'Philosophy' },
   { href: '#contact', label: 'Contact' },
 ];
 

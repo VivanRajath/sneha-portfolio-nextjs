@@ -61,25 +61,3 @@ export const gallerySection = defineType({
   ],
   orderings: [{ title: 'Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
 });
-
-export const collection = defineType({
-  name: 'collection',
-  title: 'Collection',
-  type: 'document',
-  fields: [
-    defineField({ name: 'name',     title: 'Collection Name', type: 'string' }),
-    defineField({ name: 'slug',     title: 'Slug',            type: 'slug', options: { source: 'name' } }),
-    defineField({ name: 'tagline',  title: 'Tagline',         type: 'string' }),
-    defineField({ name: 'desc',     title: 'Description',     type: 'text', rows: 2 }),
-    defineField({ name: 'coverImage', title: 'Cover Image',   type: 'image', options: { hotspot: true } }),
-    defineField({
-      name: 'thumbs',
-      title: 'Thumbnail Images (2)',
-      type: 'array',
-      of: [{ type: 'image', options: { hotspot: true } }],
-      validation: (R) => R.max(2),
-    }),
-    defineField({ name: 'order', title: 'Display Order (1, 2, 3…)', type: 'number' }),
-  ],
-  orderings: [{ title: 'Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
-});

@@ -29,17 +29,6 @@ export interface SanityGallerySection {
   order?:      number;
 }
 
-export interface SanityCollection {
-  _id:          string;
-  name:         string;
-  tagline:      string;
-  desc?:        string;
-  coverImage?:  { asset: { url: string } };
-  thumbs?:      Array<{ asset: { url: string } }>;
-  slug?:        { current: string };
-  order?:       number;
-}
-
 // ── QUERIES ──────────────────────────────
 
 export const settingsQuery = `*[_type == "settings"][0]{
@@ -55,16 +44,5 @@ export const gallerySectionsQuery = `*[_type == "gallerySection"] | order(order 
   collection,
   heroImage{ asset->{ url } },
   images[]{ asset->{ url } },
-  order
-}`;
-
-export const collectionsQuery = `*[_type == "collection"] | order(order asc){
-  _id,
-  name,
-  tagline,
-  desc,
-  coverImage{ asset->{ url } },
-  thumbs[]{ asset->{ url } },
-  slug,
   order
 }`;

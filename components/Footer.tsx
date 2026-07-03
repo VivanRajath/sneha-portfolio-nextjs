@@ -22,11 +22,11 @@ export default function Footer() {
       <div className={styles.bottom}>
         <span className={styles.copy}>© 2025 Sneha. All rights reserved.</span>
         <div className={styles.links}>
-          <a href="#hero"        id="footer-home">Home</a>
-          <a href="#about"       id="footer-about">About</a>
-          <a href="#gallery"     id="footer-gallery">Work</a>
-          <a href="#collections" id="footer-collections">Collections</a>
-          <a href="#contact"     id="footer-contact">Contact</a>
+          <a href="#hero"       id="footer-home">Home</a>
+          <a href="#about"      id="footer-about">About</a>
+          <a href="#gallery"    id="footer-gallery">Work</a>
+          <a href="#philosophy" id="footer-philosophy">Philosophy</a>
+          <a href="#contact"    id="footer-contact">Contact</a>
         </div>
       </div>
     </footer>

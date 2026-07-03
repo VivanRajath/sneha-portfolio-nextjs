@@ -104,29 +104,29 @@ export default function GalleryReel({ sanityChapters }: Props) {
     };
   }, [chapters.length]);
 
-  // JS-driven snap: when scrolling stops near a hero, glide it into the viewport
+  // JS-driven snap — ONLY when scrolling DOWN toward a hero coming up from below.
+  // Scrolling back up is left completely free (no yanking, no re-render flash).
   useEffect(() => {
     let snapping = false;
     let idle: ReturnType<typeof setTimeout>;
+    let lastY = window.scrollY;
+    let dir: 'down' | 'up' = 'down';
 
     const trySnap = () => {
-      if (snapping) return;
+      if (snapping || dir !== 'down') return;
       const vh = window.innerHeight;
-      const threshold = vh * 0.6; // only pull when a hero is well into view
       let bestTop: number | null = null;
-      let bestDist = Infinity;
 
       heroesRef.current.forEach(hero => {
         if (!hero) return;
         const top = hero.getBoundingClientRect().top;
-        const dist = Math.abs(top);
-        if (dist < threshold && dist < bestDist) {
-          bestDist = dist;
-          bestTop = top;
+        // Only heroes rising into view from below (top between just-above-0 and 60% down)
+        if (top > 4 && top < vh * 0.6) {
+          if (bestTop === null || top < bestTop) bestTop = top;
         }
       });
 
-      if (bestTop !== null && Math.abs(bestTop) > 4) {
+      if (bestTop !== null) {
         snapping = true;
         window.scrollBy({ top: bestTop, behavior: 'smooth' });
         setTimeout(() => { snapping = false; }, 800);
@@ -134,6 +134,9 @@ export default function GalleryReel({ sanityChapters }: Props) {
     };
 
     const onScrollIdle = () => {
+      const y = window.scrollY;
+      dir = y > lastY ? 'down' : 'up';
+      lastY = y;
       if (snapping) return;
       clearTimeout(idle);
       idle = setTimeout(trySnap, 130);
