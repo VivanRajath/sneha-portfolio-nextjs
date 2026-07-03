@@ -1,0 +1,128 @@
+.section {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.bg {
+  position: absolute;
+  inset: -15%;
+  z-index: 0;
+}
+
+.bg img {
+  width: 100%;
+  height: 130%;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: saturate(0.3) brightness(0.25);
+  display: block;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    140deg,
+    rgba(86, 28, 36, 0.9) 0%,
+    rgba(20, 5, 8, 0.82) 100%
+  );
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  padding: 9rem 5vw;
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* ── PILLARS ────────────────────────────── */
+.pillar {
+  border-top: 1px solid rgba(232, 216, 196, 0.10);
+  clip-path: inset(0 0 100% 0);
+  opacity: 0;
+  transition: clip-path 0.95s var(--ease-out), opacity 0.95s var(--ease-out);
+}
+
+.pillar.inView {
+  clip-path: inset(0 0 0% 0);
+  opacity: 1;
+}
+
+.pillar:last-of-type { border-bottom: 1px solid rgba(232, 216, 196, 0.10); }
+
+.pillarInner {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5rem;
+  padding: 2rem 0;
+}
+
+.pillarNum {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  color: rgba(232, 216, 196, 0.35);
+  flex-shrink: 0;
+  padding-top: 0.9rem;
+}
+
+.pillarText {
+  display: flex;
+  align-items: baseline;
+  gap: 3rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.pillarWord {
+  font-family: var(--font-serif);
+  font-size: clamp(3.2rem, 8.5vw, 9rem);
+  font-weight: 300;
+  color: var(--ivory);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  transition: letter-spacing 0.4s var(--ease-out), color 0.4s;
+  flex-shrink: 0;
+}
+
+.pillar:hover .pillarWord {
+  letter-spacing: 0.04em;
+  color: var(--ivory-3);
+}
+
+.pillarLine {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+  color: rgba(232, 216, 196, 0.45);
+  line-height: 1.6;
+  max-width: 320px;
+  padding-bottom: 0.5rem;
+  transition: color 0.4s;
+}
+
+.pillar:hover .pillarLine { color: rgba(232, 216, 196, 0.7); }
+
+/* ── CODA ───────────────────────────────── */
+.coda {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  color: rgba(232, 216, 196, 0.5);
+  line-height: 1.72;
+  margin-top: 4.5rem;
+  max-width: 560px;
+  padding-left: 2rem;
+  border-left: 2px solid rgba(232, 216, 196, 0.18);
+}
+
+@media (max-width: 768px) {
+  .pillarWord { font-size: 13vw; }
+  .pillarText { flex-direction: column; gap: 0.75rem; }
+  .pillarLine { max-width: 100%; }
+}

@@ -1,0 +1,296 @@
+/* ── SECTION ────────────────────────────── */
+.section {
+  background: var(--ivory);
+  padding: 6rem 0 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 320vh;
+}
+
+/* ── HEADING (sticky) ───────────────────── */
+.headingWrap {
+  padding: 0 5vw 4rem;
+  position: sticky;
+  top: 8rem;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.heading {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 6vw, 6rem);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--maroon);
+}
+
+/* ── 3-COLUMN GALLERY ───────────────────── */
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+  padding: 0 3vw;
+  position: relative;
+  z-index: 1;
+  margin-top: -30vh;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  will-change: transform;
+}
+
+/* Column B: starts higher, parallax runs faster */
+.colB { margin-top: -6rem; }
+
+/* Column C: starts lower, parallax runs slower */
+.colC { margin-top: 4rem; }
+
+/* ── IMAGE CARD ─────────────────────────── */
+.card {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  position: relative;
+  background: var(--sand); /* instant sand placeholder — no white flash */
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(70%);
+  /* No opacity transition — image appears immediately when loaded */
+  transition: filter 0.55s var(--ease-out), transform 0.6s var(--ease-out);
+}
+
+.card:hover img {
+  filter: grayscale(0%);
+  transform: scale(1.04);
+}
+
+/* ── HERO REVEAL ────────────────────────── */
+/* Sits sticky at the bottom; slides up when heroVisible */
+.heroReveal {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  z-index: 10;
+  background: var(--ivory-3);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.heroReveal.heroVisible {
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* ── CLOSE BUTTON ───────────────────────── */
+.closeBtn {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  background: var(--ivory-2);
+  border: 1px solid var(--maroon-border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s, background 0.3s;
+  flex-shrink: 0;
+}
+
+.closeBtn:hover {
+  border-color: var(--maroon);
+  background: var(--maroon-pale);
+}
+
+.closeBtn span {
+  position: absolute;
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: var(--maroon);
+}
+
+.closeBtn span:first-child { transform: rotate(45deg); }
+.closeBtn span:last-child  { transform: rotate(-45deg); }
+
+/* ── HERO SPLIT: IMAGE + DETAILS ────────── */
+.heroSplit {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 55% 45%;
+}
+
+.heroBw {
+  overflow: hidden;
+  position: relative;
+}
+
+.heroBw img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: grayscale(100%);
+  display: block;
+}
+
+.heroInfo {
+  padding: 5rem 4vw 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--maroon-border);
+  overflow-y: auto;
+}
+
+.heroColl {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--maroon-3);
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 4.5vw, 5rem);
+  font-weight: 300;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--maroon);
+  margin-bottom: 1.5rem;
+}
+
+.heroMeta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--maroon-2);
+  margin-bottom: 2rem;
+}
+
+.heroDot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--maroon-3);
+  flex-shrink: 0;
+}
+
+.heroDesc {
+  font-family: var(--font-serif);
+  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  font-style: italic;
+  line-height: 1.75;
+  color: var(--maroon);
+  max-width: 380px;
+  margin-bottom: 2rem;
+}
+
+.heroIdx {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--sand-2);
+  margin-top: auto;
+}
+
+/* ── RELATED STRIPS ─────────────────────── */
+/* 3 horizontal auto-scrolling rows, each a different speed */
+.relStrips {
+  height: 25vh;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--maroon-border);
+  background: var(--ivory-2);
+  overflow: hidden;
+}
+
+.strip {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  overflow: hidden;
+  width: max-content;
+  border-bottom: 1px solid var(--maroon-border);
+}
+
+.strip:last-child { border-bottom: none; }
+
+.strip0 { animation: sLeft  20s linear infinite; }
+.strip1 { animation: sRight 13s linear infinite; }
+.strip2 { animation: sLeft  27s linear infinite; }
+
+@keyframes sLeft  { from { transform: translateX(0); }    to { transform: translateX(-50%); } }
+@keyframes sRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+.stripCard {
+  flex-shrink: 0;
+  height: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--sand);
+  border: none;
+  padding: 0;
+  display: block;
+  cursor: pointer;
+}
+
+.stripCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+}
+
+.stripCard:hover img { transform: scale(1.06); }
+
+/* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 768px) {
+  .section { min-height: 400vh; }
+  .gallery { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .colC { display: none; }
+  .heroSplit { grid-template-columns: 1fr; }
+  .heroBw { position: relative; height: 50vh; }
+  .heroBw img { position: absolute; inset: 0; }
+  .heroInfo {
+    padding: 2rem 5vw 2rem;
+    border-left: none;
+    border-top: 1px solid var(--maroon-border);
+    justify-content: flex-start;
+  }
+  .heroTitle { font-size: clamp(2rem, 8vw, 3rem); }
+  .relStrips { height: 22vh; }
+}
