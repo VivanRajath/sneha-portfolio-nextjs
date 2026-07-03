@@ -1,8 +1,8 @@
 'use client';
+import { useEffect, useRef } from 'react';
 import styles from './GalleryReel.module.css';
 import type { SanityGallerySection } from '@/lib/sanity';
 
-// ── Static fallback chapters ──────────────
 interface Chapter {
   _id: string;
   title?: string;
@@ -53,7 +53,9 @@ interface Props {
 }
 
 export default function GalleryReel({ sanityChapters }: Props) {
-  // Map Sanity data to the Chapter shape, or use static fallback
+  const galleriesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const ticking = useRef(false);
+
   const chapters: Chapter[] =
     sanityChapters && sanityChapters.length > 0
       ? sanityChapters.map(s => ({
@@ -67,9 +69,42 @@ export default function GalleryReel({ sanityChapters }: Props) {
         }))
       : staticChapters;
 
+  // Vertical parallax — each column moves at a different speed
+  useEffect(() => {
+    const update = () => {
+      const vh = window.innerHeight;
+      galleriesRef.current.forEach(gallery => {
+        if (!gallery) return;
+        const rect = gallery.getBoundingClientRect();
+        // Only compute when the gallery is anywhere near the viewport
+        if (rect.bottom < -vh || rect.top > vh * 1.5) return;
+
+        // progress grows as the gallery scrolls up through the viewport
+        const progress = vh - rect.top;
+        const colB = gallery.querySelector<HTMLDivElement>('[data-col="b"]');
+        const colC = gallery.querySelector<HTMLDivElement>('[data-col="c"]');
+        // Column A stays; B moves up faster; C lags behind (moves down slower)
+        if (colB) colB.style.transform = `translateY(${-progress * 0.12}px)`;
+        if (colC) colC.style.transform = `translateY(${progress * 0.08}px)`;
+      });
+    };
+
+    update();
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => { update(); ticking.current = false; });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [chapters.length]);
+
   return (
     <section className={styles.section} id="gallery">
-      {/* Section label */}
       <div className={styles.sectionLabel}>
         <div className="section-tag">
           <span className="dot" /> The Work
@@ -77,10 +112,10 @@ export default function GalleryReel({ sanityChapters }: Props) {
       </div>
 
       {chapters.map((chapter, ci) => {
-        // Split images into 3 rows (distribute round-robin)
-        const row0 = chapter.images.filter((_, i) => i % 3 === 0);
-        const row1 = chapter.images.filter((_, i) => i % 3 === 1);
-        const row2 = chapter.images.filter((_, i) => i % 3 === 2);
+        // Distribute images round-robin into 3 vertical columns
+        const colA = chapter.images.filter((_, i) => i % 3 === 0);
+        const colB = chapter.images.filter((_, i) => i % 3 === 1);
+        const colC = chapter.images.filter((_, i) => i % 3 === 2);
         const total = chapters.length;
 
         return (
@@ -98,50 +133,42 @@ export default function GalleryReel({ sanityChapters }: Props) {
                 />
               )}
               <div className={styles.heroOverlay} />
-
-              {/* Bottom-left: title + collection */}
               <div className={styles.heroLabel}>
-                {chapter.collection && (
-                  <span className={styles.heroColl}>{chapter.collection}</span>
-                )}
-                {chapter.title && (
-                  <h2 className={styles.heroTitle}>{chapter.title}</h2>
-                )}
+                {chapter.collection && <span className={styles.heroColl}>{chapter.collection}</span>}
+                {chapter.title && <h2 className={styles.heroTitle}>{chapter.title}</h2>}
               </div>
-
-              {/* Bottom-right: counter */}
               <div className={styles.heroCounter}>
                 {String(ci + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
               </div>
             </div>
 
-            {/* 3 auto-scrolling rows at different speeds */}
+            {/* 3 vertical columns — different scroll speeds */}
             {chapter.images.length > 0 && (
-              <div className={styles.rows}>
-                {([row0, row1, row2] as string[][]).map((row, ri) => {
-                  if (row.length === 0) return null;
-                  const doubled = [...row, ...row];
-                  return (
-                    <div key={ri} className={styles.rowOuter}>
-                      <div
-                        className={`${styles.row} ${
-                          ri === 0 ? styles.row0 : ri === 1 ? styles.row1 : styles.row2
-                        }`}
-                      >
-                        {doubled.map((src, i) => (
-                          <div key={`${src}-${i}`} className={styles.rowCard}>
-                            <img
-                              src={src}
-                              alt=""
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          </div>
-                        ))}
-                      </div>
+              <div
+                className={styles.gallery}
+                ref={el => { galleriesRef.current[ci] = el; }}
+              >
+                <div className={styles.col} data-col="a">
+                  {colA.map((src, i) => (
+                    <div key={`a-${i}`} className={styles.card}>
+                      <img src={src} alt="" loading="lazy" decoding="async" />
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+                <div className={`${styles.col} ${styles.colB}`} data-col="b">
+                  {colB.map((src, i) => (
+                    <div key={`b-${i}`} className={styles.card}>
+                      <img src={src} alt="" loading="lazy" decoding="async" />
+                    </div>
+                  ))}
+                </div>
+                <div className={`${styles.col} ${styles.colC}`} data-col="c">
+                  {colC.map((src, i) => (
+                    <div key={`c-${i}`} className={styles.card}>
+                      <img src={src} alt="" loading="lazy" decoding="async" />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
