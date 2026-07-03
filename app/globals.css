@@ -29,6 +29,9 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  /* Snap to each gallery hero — only elements with scroll-snap-align snap,
+     so this only affects the gallery chapter heroes, nothing else. */
+  scroll-snap-type: y proximity;
 }
 
 body {

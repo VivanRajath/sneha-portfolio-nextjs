@@ -14,6 +14,9 @@
   height: 100vh;
   overflow: hidden;
   background: var(--sand);
+  /* Snap point: scrolling past a chapter's columns lands directly here */
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .chapterHero img {
@@ -81,21 +84,21 @@
 .gallery {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.5rem;
-  padding: 5rem 3vw 7rem;
+  gap: 2rem;                 /* horizontal gap between columns */
+  padding: 6rem 2rem 8rem;   /* breathing room above/below the columns */
   align-items: start;
 }
 
 .col {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;                 /* vertical gap between images */
   will-change: transform;
 }
 
 /* Staggered starting offsets so columns feel independent */
-.colB { margin-top: -6rem; }
-.colC { margin-top: 4rem; }
+.colB { margin-top: -7rem; }
+.colC { margin-top: 5rem; }
 
 /* ── IMAGE CARD ─────────────────────────── */
 .card {
@@ -126,9 +129,10 @@
   .heroTitle { font-size: clamp(2.2rem, 8vw, 3.5rem); }
   .gallery {
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    padding: 3rem 3vw 4rem;
+    gap: 1.25rem;
+    padding: 3rem 1.25rem 4rem;
   }
+  .col { gap: 1.25rem; }
   .colC { display: none; }
-  .colB { margin-top: -3rem; }
+  .colB { margin-top: -3.5rem; }
 }
