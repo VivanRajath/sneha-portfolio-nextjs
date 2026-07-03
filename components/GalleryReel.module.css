@@ -8,18 +8,28 @@
   padding: 6rem 5vw 3rem;
 }
 
-/* ── CHAPTER HERO (full-screen image) ───── */
+/* ── CHAPTER HERO ───────────────────────── */
+/* Full viewport height; image is 80% wide, centered → 10% gap each side */
 .chapterHero {
-  position: relative;
   height: 100vh;
-  overflow: hidden;
-  background: var(--sand);
-  /* Snap point: scrolling past a chapter's columns lands directly here */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ivory);
+  /* Snap point: scrolling past a chapter's columns lands here */
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
 
-.chapterHero img {
+.heroImgWrap {
+  position: relative;
+  width: 80%;       /* 10% gap left + 10% gap right */
+  height: 84vh;     /* vertical breathing room top & bottom */
+  overflow: hidden;
+  background: var(--sand);
+}
+
+.heroImgWrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -29,23 +39,23 @@
   transition: filter 1s var(--ease-out);
 }
 
-.chapterHero:hover img { filter: grayscale(0%); }
+.heroImgWrap:hover img { filter: grayscale(0%); }
 
 .heroOverlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    transparent 45%,
-    rgba(14, 4, 6, 0.65) 100%
+    transparent 50%,
+    rgba(14, 4, 6, 0.6) 100%
   );
   pointer-events: none;
 }
 
 .heroLabel {
   position: absolute;
-  bottom: 3rem;
-  left: 5vw;
+  bottom: 2.5rem;
+  left: 2.5rem;
   z-index: 2;
 }
 
@@ -55,13 +65,13 @@
   font-size: 0.62rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: rgba(232, 216, 196, 0.6);
-  margin-bottom: 0.65rem;
+  color: rgba(232, 216, 196, 0.65);
+  margin-bottom: 0.6rem;
 }
 
 .heroTitle {
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 6vw, 6.5rem);
+  font-size: clamp(2.5rem, 5vw, 5.5rem);
   font-weight: 300;
   color: var(--ivory);
   letter-spacing: 0.04em;
@@ -70,37 +80,40 @@
 
 .heroCounter {
   position: absolute;
-  bottom: 3rem;
-  right: 3rem;
+  bottom: 2.5rem;
+  right: 2.5rem;
   z-index: 2;
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.22em;
-  color: rgba(232, 216, 196, 0.45);
+  color: rgba(232, 216, 196, 0.5);
   text-transform: uppercase;
 }
 
-/* ── 3 VERTICAL COLUMNS ─────────────────── */
+/* ── 3 VERTICAL COLUMNS (60% width, centered) ─ */
 .gallery {
+  width: 60%;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 2rem;                 /* horizontal gap between columns */
-  padding: 6rem 2rem 8rem;   /* breathing room above/below the columns */
+  gap: 1.25rem;              /* horizontal gap between columns */
+  /* Big gap below so there's clear space before the next hero */
+  padding: 5rem 0 14vh;
   align-items: start;
 }
 
 .col {
   display: flex;
   flex-direction: column;
-  gap: 2rem;                 /* vertical gap between images */
+  gap: 1.25rem;             /* vertical gap between images */
   will-change: transform;
 }
 
-/* Staggered starting offsets so columns feel independent */
-.colB { margin-top: -7rem; }
-.colC { margin-top: 5rem; }
+/* Small staggered offsets — subtle independence */
+.colB { margin-top: -4rem; }
+.colC { margin-top: 3rem; }
 
-/* ── IMAGE CARD ─────────────────────────── */
+/* ── IMAGE CARD (reduced size) ──────────── */
 .card {
   width: 100%;
   aspect-ratio: 3 / 4;
@@ -124,15 +137,20 @@
 }
 
 /* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 1100px) {
+  .gallery { width: 78%; }
+}
+
 @media (max-width: 768px) {
-  .chapterHero { height: 85vh; }
-  .heroTitle { font-size: clamp(2.2rem, 8vw, 3.5rem); }
+  .heroImgWrap { width: 88%; height: 78vh; }
+  .heroTitle { font-size: clamp(2rem, 8vw, 3rem); }
   .gallery {
+    width: 90%;
     grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
-    padding: 3rem 1.25rem 4rem;
+    gap: 1rem;
+    padding: 3rem 0 10vh;
   }
-  .col { gap: 1.25rem; }
+  .col { gap: 1rem; }
   .colC { display: none; }
-  .colB { margin-top: -3.5rem; }
+  .colB { margin-top: -2.5rem; }
 }

@@ -83,9 +83,9 @@ export default function GalleryReel({ sanityChapters }: Props) {
         const progress = vh - rect.top;
         const colB = gallery.querySelector<HTMLDivElement>('[data-col="b"]');
         const colC = gallery.querySelector<HTMLDivElement>('[data-col="c"]');
-        // Column A stays; B moves up faster; C lags behind (moves down slower)
-        if (colB) colB.style.transform = `translateY(${-progress * 0.12}px)`;
-        if (colC) colC.style.transform = `translateY(${progress * 0.08}px)`;
+        // Subtle, minute parallax — barely perceptible speed difference
+        if (colB) colB.style.transform = `translateY(${-progress * 0.05}px)`;
+        if (colC) colC.style.transform = `translateY(${progress * 0.035}px)`;
       });
     };
 
@@ -121,24 +121,26 @@ export default function GalleryReel({ sanityChapters }: Props) {
         return (
           <div key={chapter._id} className={styles.chapter}>
 
-            {/* Full-screen hero image */}
+            {/* Hero image — 80% width, centered with side gaps */}
             <div className={styles.chapterHero}>
-              {chapter.heroImage && (
-                <img
-                  src={chapter.heroImage}
-                  alt={chapter.title || `Gallery ${ci + 1}`}
-                  loading={ci === 0 ? 'eager' : 'lazy'}
-                  fetchPriority={ci === 0 ? 'high' : 'auto'}
-                  decoding="async"
-                />
-              )}
-              <div className={styles.heroOverlay} />
-              <div className={styles.heroLabel}>
-                {chapter.collection && <span className={styles.heroColl}>{chapter.collection}</span>}
-                {chapter.title && <h2 className={styles.heroTitle}>{chapter.title}</h2>}
-              </div>
-              <div className={styles.heroCounter}>
-                {String(ci + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+              <div className={styles.heroImgWrap}>
+                {chapter.heroImage && (
+                  <img
+                    src={chapter.heroImage}
+                    alt={chapter.title || `Gallery ${ci + 1}`}
+                    loading={ci === 0 ? 'eager' : 'lazy'}
+                    fetchPriority={ci === 0 ? 'high' : 'auto'}
+                    decoding="async"
+                  />
+                )}
+                <div className={styles.heroOverlay} />
+                <div className={styles.heroLabel}>
+                  {chapter.collection && <span className={styles.heroColl}>{chapter.collection}</span>}
+                  {chapter.title && <h2 className={styles.heroTitle}>{chapter.title}</h2>}
+                </div>
+                <div className={styles.heroCounter}>
+                  {String(ci + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+                </div>
               </div>
             </div>
 
