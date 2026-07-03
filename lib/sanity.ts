@@ -20,6 +20,15 @@ export interface SanitySettings {
   aboutBio?:         string;
 }
 
+export interface SanityGallerySection {
+  _id:         string;
+  title?:      string;
+  collection?: string;
+  heroImage?:  { asset: { url: string } };
+  images?:     Array<{ asset: { url: string } }>;
+  order?:      number;
+}
+
 export interface SanityCollection {
   _id:          string;
   name:         string;
@@ -38,6 +47,15 @@ export const settingsQuery = `*[_type == "settings"][0]{
   aboutMainImage{ asset->{ url } },
   aboutAccentImage{ asset->{ url } },
   aboutBio
+}`;
+
+export const gallerySectionsQuery = `*[_type == "gallerySection"] | order(order asc){
+  _id,
+  title,
+  collection,
+  heroImage{ asset->{ url } },
+  images[]{ asset->{ url } },
+  order
 }`;
 
 export const collectionsQuery = `*[_type == "collection"] | order(order asc){

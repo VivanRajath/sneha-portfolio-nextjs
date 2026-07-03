@@ -35,31 +35,31 @@ export const settings = defineType({
   ],
 });
 
-export const gallery = defineType({
-  name: 'gallery',
-  title: 'Gallery Reel',
+export const gallerySection = defineType({
+  name: 'gallerySection',
+  title: 'Gallery Section',
   type: 'document',
+  description: 'Each section = one full-screen hero image + 3 auto-scrolling image rows below it. Add as many sections as you want.',
   fields: [
+    defineField({ name: 'title',      title: 'Title',            type: 'string', description: 'e.g. H O P' }),
+    defineField({ name: 'collection', title: 'Collection Label', type: 'string', description: 'e.g. Street Couture' }),
+    defineField({
+      name: 'heroImage',
+      title: 'Hero Image',
+      description: 'Full-screen image shown at the top of this section',
+      type: 'image',
+      options: { hotspot: true },
+    }),
     defineField({
       name: 'images',
-      title: 'Gallery Images',
+      title: 'Gallery Images (3 rows)',
+      description: 'Upload 9+ images — auto-split into 3 rows, each scrolling at a different speed',
       type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            defineField({ name: 'image',      title: 'Image',       type: 'image', options: { hotspot: true } }),
-            defineField({ name: 'title',      title: 'Title',       type: 'string' }),
-            defineField({ name: 'subtitle',   title: 'Subtitle',    type: 'string' }),
-            defineField({ name: 'collection', title: 'Collection',  type: 'string' }),
-            defineField({ name: 'year',       title: 'Year',        type: 'string' }),
-            defineField({ name: 'desc',       title: 'Description', type: 'text', rows: 2 }),
-          ],
-          preview: { select: { title: 'title', media: 'image' } },
-        },
-      ],
+      of: [{ type: 'image', options: { hotspot: true } }],
     }),
+    defineField({ name: 'order', title: 'Display Order (1, 2, 3…)', type: 'number' }),
   ],
+  orderings: [{ title: 'Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
 });
 
 export const collection = defineType({
