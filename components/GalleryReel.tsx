@@ -54,6 +54,7 @@ interface Props {
 
 export default function GalleryReel({ sanityChapters }: Props) {
   const galleriesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const heroesRef = useRef<(HTMLDivElement | null)[]>([]);
   const ticking = useRef(false);
 
   const chapters: Chapter[] =
@@ -103,6 +104,48 @@ export default function GalleryReel({ sanityChapters }: Props) {
     };
   }, [chapters.length]);
 
+  // JS-driven snap: when scrolling stops near a hero, glide it into the viewport
+  useEffect(() => {
+    let snapping = false;
+    let idle: ReturnType<typeof setTimeout>;
+
+    const trySnap = () => {
+      if (snapping) return;
+      const vh = window.innerHeight;
+      const threshold = vh * 0.6; // only pull when a hero is well into view
+      let bestTop: number | null = null;
+      let bestDist = Infinity;
+
+      heroesRef.current.forEach(hero => {
+        if (!hero) return;
+        const top = hero.getBoundingClientRect().top;
+        const dist = Math.abs(top);
+        if (dist < threshold && dist < bestDist) {
+          bestDist = dist;
+          bestTop = top;
+        }
+      });
+
+      if (bestTop !== null && Math.abs(bestTop) > 4) {
+        snapping = true;
+        window.scrollBy({ top: bestTop, behavior: 'smooth' });
+        setTimeout(() => { snapping = false; }, 800);
+      }
+    };
+
+    const onScrollIdle = () => {
+      if (snapping) return;
+      clearTimeout(idle);
+      idle = setTimeout(trySnap, 130);
+    };
+
+    window.addEventListener('scroll', onScrollIdle, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScrollIdle);
+      clearTimeout(idle);
+    };
+  }, [chapters.length]);
+
   return (
     <section className={styles.section} id="gallery">
       <div className={styles.sectionLabel}>
@@ -122,7 +165,10 @@ export default function GalleryReel({ sanityChapters }: Props) {
           <div key={chapter._id} className={styles.chapter}>
 
             {/* Hero image — 80% width, centered with side gaps */}
-            <div className={styles.chapterHero}>
+            <div
+              className={styles.chapterHero}
+              ref={el => { heroesRef.current[ci] = el; }}
+            >
               <div className={styles.heroImgWrap}>
                 {chapter.heroImage && (
                   <img

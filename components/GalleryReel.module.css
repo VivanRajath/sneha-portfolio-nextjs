@@ -16,9 +16,6 @@
   align-items: center;
   justify-content: center;
   background: var(--ivory);
-  /* Snap point: scrolling past a chapter's columns lands here */
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 
 .heroImgWrap {
@@ -92,11 +89,12 @@
 
 /* ── 3 VERTICAL COLUMNS (60% width, centered) ─ */
 .gallery {
-  width: 60%;
+  width: 64%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 1.25rem;              /* horizontal gap between columns */
+  /* row-gap  column-gap → wider horizontal space between the 3 columns */
+  gap: 1.5rem 2.75rem;
   /* Big gap below so there's clear space before the next hero */
   padding: 5rem 0 14vh;
   align-items: start;
@@ -105,7 +103,7 @@
 .col {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;             /* vertical gap between images */
+  gap: 1.5rem;             /* vertical gap between images */
   will-change: transform;
 }
 

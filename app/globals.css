@@ -28,12 +28,8 @@
 
 html {
   scroll-behavior: smooth;
-  /* clip (not hidden) prevents a competing horizontal scroll container,
-     which otherwise breaks vertical scroll-snap */
+  /* clip (not hidden) avoids a competing horizontal scroll container */
   overflow-x: clip;
-  /* Snap to each gallery hero — only elements with scroll-snap-align snap,
-     so this only affects the gallery chapter heroes, nothing else. */
-  scroll-snap-type: y proximity;
 }
 
 body {
