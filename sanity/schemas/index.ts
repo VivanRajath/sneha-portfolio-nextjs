@@ -6,9 +6,31 @@ export const settings = defineType({
   type: 'document',
   fields: [
     defineField({ name: 'siteTitle', title: 'Site Title', type: 'string' }),
-    defineField({ name: 'heroImage', title: 'Hero Background Image', type: 'image', options: { hotspot: true } }),
-    defineField({ name: 'aboutImage', title: 'About Section Image', type: 'image', options: { hotspot: true } }),
-    defineField({ name: 'aboutBio', title: 'About Bio (short)', type: 'text', rows: 3 }),
+    defineField({
+      name: 'heroImage',
+      title: 'Hero Background Image',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'aboutMainImage',
+      title: 'About — Main Portrait',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'aboutAccentImage',
+      title: 'About — Accent Portrait',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'aboutBio',
+      title: 'About Bio',
+      type: 'text',
+      rows: 4,
+      description: 'Short bio shown in the About section',
+    }),
   ],
 });
 
@@ -18,22 +40,23 @@ export const gallery = defineType({
   type: 'document',
   fields: [
     defineField({
-      name: 'heroRevealImage',
-      title: 'Hero Reveal Image (B&W push)',
-      type: 'image',
-      options: { hotspot: true },
-    }),
-    defineField({
       name: 'images',
-      title: 'Gallery Images (3 columns)',
+      title: 'Gallery Images',
       type: 'array',
-      of: [{ type: 'image', options: { hotspot: true } }],
-    }),
-    defineField({
-      name: 'showMoreImages',
-      title: 'Show More Images (hidden initially)',
-      type: 'array',
-      of: [{ type: 'image', options: { hotspot: true } }],
+      of: [
+        {
+          type: 'object',
+          fields: [
+            defineField({ name: 'image',      title: 'Image',       type: 'image', options: { hotspot: true } }),
+            defineField({ name: 'title',      title: 'Title',       type: 'string' }),
+            defineField({ name: 'subtitle',   title: 'Subtitle',    type: 'string' }),
+            defineField({ name: 'collection', title: 'Collection',  type: 'string' }),
+            defineField({ name: 'year',       title: 'Year',        type: 'string' }),
+            defineField({ name: 'desc',       title: 'Description', type: 'text', rows: 2 }),
+          ],
+          preview: { select: { title: 'title', media: 'image' } },
+        },
+      ],
     }),
   ],
 });
@@ -43,18 +66,19 @@ export const collection = defineType({
   title: 'Collection',
   type: 'document',
   fields: [
-    defineField({ name: 'name', title: 'Collection Name', type: 'string' }),
-    defineField({ name: 'slug', title: 'Slug', type: 'slug', options: { source: 'name' } }),
-    defineField({ name: 'tagline', title: 'Tagline (1 line)', type: 'string' }),
-    defineField({ name: 'description', title: 'Description (optional, short)', type: 'text', rows: 2 }),
-    defineField({ name: 'coverImage', title: 'Cover Image', type: 'image', options: { hotspot: true } }),
+    defineField({ name: 'name',     title: 'Collection Name', type: 'string' }),
+    defineField({ name: 'slug',     title: 'Slug',            type: 'slug', options: { source: 'name' } }),
+    defineField({ name: 'tagline',  title: 'Tagline',         type: 'string' }),
+    defineField({ name: 'desc',     title: 'Description',     type: 'text', rows: 2 }),
+    defineField({ name: 'coverImage', title: 'Cover Image',   type: 'image', options: { hotspot: true } }),
     defineField({
-      name: 'images',
-      title: 'Collection Images',
+      name: 'thumbs',
+      title: 'Thumbnail Images (2)',
       type: 'array',
       of: [{ type: 'image', options: { hotspot: true } }],
+      validation: (R) => R.max(2),
     }),
-    defineField({ name: 'order', title: 'Display Order', type: 'number' }),
+    defineField({ name: 'order', title: 'Display Order (1, 2, 3…)', type: 'number' }),
   ],
   orderings: [{ title: 'Order', name: 'orderAsc', by: [{ field: 'order', direction: 'asc' }] }],
 });

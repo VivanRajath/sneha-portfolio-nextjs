@@ -1,8 +1,9 @@
 'use client';
 import { useRef, useEffect } from 'react';
 import styles from './Collections.module.css';
+import type { SanityCollection } from '@/lib/sanity';
 
-const collections = [
+const staticCollections = [
   {
     id: 'hop',
     num: '01',
@@ -32,7 +33,11 @@ const collections = [
   },
 ];
 
-export default function Collections() {
+interface Props {
+  sanityCollections?: SanityCollection[];
+}
+
+export default function Collections({ sanityCollections }: Props) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -48,6 +53,19 @@ export default function Collections() {
     return () => observer.disconnect();
   }, []);
 
+  // Use Sanity data if available, otherwise fall back to static
+  const entries = sanityCollections && sanityCollections.length > 0
+    ? sanityCollections.map((c, i) => ({
+        id: c.slug?.current || c._id,
+        num: String(i + 1).padStart(2, '0'),
+        name: c.name,
+        tagline: c.tagline,
+        desc: c.desc || '',
+        cover: c.coverImage?.asset?.url || '',
+        thumbs: (c.thumbs || []).map(t => t.asset?.url || '').filter(Boolean),
+      }))
+    : staticCollections;
+
   return (
     <section className={styles.section} id="collections" ref={sectionRef}>
       <div className={styles.sectionHead}>
@@ -59,31 +77,27 @@ export default function Collections() {
         </h2>
       </div>
 
-      {collections.map((coll, ci) => (
+      {entries.map((coll, ci) => (
         <div
           key={coll.id}
           className={`${styles.entry} ${ci % 2 === 1 ? styles.entryFlip : ''} ${styles.reveal}`}
           id={`coll-${coll.id}`}
         >
-          {/* Index number — decorative */}
           <div className={styles.entryNum}>{coll.num}</div>
 
-          {/* Cover image — large */}
           <div className={styles.entryImg}>
-            <img src={coll.cover} alt={coll.name} loading="lazy" />
+            {coll.cover && <img src={coll.cover} alt={coll.name} loading="lazy" />}
             <div className={styles.imgOverlay} />
           </div>
 
-          {/* Thumbnails */}
           <div className={styles.thumbs}>
-            {coll.thumbs.map((src, i) => (
+            {coll.thumbs.slice(0, 2).map((src, i) => (
               <div key={i} className={styles.thumb}>
                 <img src={src} alt={`${coll.name} ${i + 2}`} loading="lazy" />
               </div>
             ))}
           </div>
 
-          {/* Info panel */}
           <div className={styles.info}>
             <span className={styles.infoNum}>{coll.num}</span>
             <h3 className={styles.infoName}>{coll.name}</h3>

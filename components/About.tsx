@@ -10,7 +10,13 @@ const stats = [
 
 const skills = ['Styling', 'Creative Direction', 'Costume Design', 'Editorial', 'Concept Development'];
 
-export default function About() {
+interface AboutProps {
+  bio?: string;
+  mainImageUrl?: string;
+  accentImageUrl?: string;
+}
+
+export default function About({ bio, mainImageUrl, accentImageUrl }: AboutProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const statsRef   = useRef<HTMLDivElement>(null);
   const numsRef    = useRef<(HTMLSpanElement | null)[]>([]);
@@ -68,17 +74,16 @@ export default function About() {
       <div className={styles.split}>
         <div className={`${styles.imgCol} ${styles.reveal}`}>
           <div className={styles.mainImg}>
-            <img src="/works/Hop-6-2.webp" alt="Sneha" loading="eager" />
+            <img src={mainImageUrl || '/works/Hop-6-2.webp'} alt="Sneha" loading="eager" />
           </div>
           <div className={styles.accentImg}>
-            <img src="/works/Hop-4-2.webp" alt="Editorial" loading="eager" />
+            <img src={accentImageUrl || '/works/Hop-4-2.webp'} alt="Editorial" loading="eager" />
           </div>
         </div>
 
         <div className={styles.textCol}>
           <p className={`${styles.lead} ${styles.reveal}`}>
-            Fashion became language for me — every fold a sentence, every silhouette a story.
-            I grew up in Bengaluru where tradition and rebellion share the same sidewalk.
+            {bio || 'Fashion became language for me — every fold a sentence, every silhouette a story. I grew up in Bengaluru where tradition and rebellion share the same sidewalk.'}
           </p>
 
           <div className={`${styles.skillList} ${styles.reveal}`}>

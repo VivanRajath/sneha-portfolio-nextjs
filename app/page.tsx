@@ -8,18 +8,36 @@ import Collections from '@/components/Collections';
 import Philosophy from '@/components/Philosophy';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
+import { sanityClient, settingsQuery, collectionsQuery } from '@/lib/sanity';
+import type { SanitySettings, SanityCollection } from '@/lib/sanity';
 
-export default function Home() {
+export default async function Home() {
+  let settings: SanitySettings | null = null;
+  let collections: SanityCollection[] = [];
+
+  try {
+    [settings, collections] = await Promise.all([
+      sanityClient.fetch<SanitySettings>(settingsQuery),
+      sanityClient.fetch<SanityCollection[]>(collectionsQuery),
+    ]);
+  } catch {
+    // Falls back to static content if Sanity is unreachable
+  }
+
   return (
     <>
       <Loader />
       <Nav />
       <main>
-        <Hero />
+        <Hero heroImageUrl={settings?.heroImage?.asset?.url} />
         <Marquee />
-        <About />
+        <About
+          bio={settings?.aboutBio}
+          mainImageUrl={settings?.aboutMainImage?.asset?.url}
+          accentImageUrl={settings?.aboutAccentImage?.asset?.url}
+        />
         <GalleryReel />
-        <Collections />
+        <Collections sanityCollections={collections.length > 0 ? collections : undefined} />
         <Philosophy />
         <Contact />
       </main>

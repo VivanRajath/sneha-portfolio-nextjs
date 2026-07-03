@@ -1,10 +1,9 @@
 import { createClient } from 'next-sanity';
 
-const projectId  = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'placeholder';
+const projectId  = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '';
 const dataset    = process.env.NEXT_PUBLIC_SANITY_DATASET    || 'production';
 const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-01-01';
 
-// Public CDN client — used for all read queries on the portfolio
 export const sanityClient = createClient({
   projectId,
   dataset,
@@ -12,40 +11,42 @@ export const sanityClient = createClient({
   useCdn: true,
 });
 
-// Authenticated client — used for preview / write operations from the studio
-export const sanityWriteClient = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: false,
-  token: process.env.SANITY_API_TOKEN,
-});
+// ── TYPES ────────────────────────────────
 
-// ── GROQ QUERIES ────────────────────────
+export interface SanitySettings {
+  heroImage?:       { asset: { url: string } };
+  aboutMainImage?:  { asset: { url: string } };
+  aboutAccentImage?:{ asset: { url: string } };
+  aboutBio?:        string;
+}
 
-export const galleryQuery = `*[_type == "gallery"][0]{
-  heroRevealImage,
-  images[]{
-    asset->{url, metadata},
-    alt
-  },
-  showMoreImages[]{
-    asset->{url, metadata},
-    alt
-  }
+export interface SanityCollection {
+  _id:          string;
+  name:         string;
+  tagline:      string;
+  desc?:        string;
+  coverImage?:  { asset: { url: string } };
+  thumbs?:      Array<{ asset: { url: string } }>;
+  slug?:        { current: string };
+  order?:       number;
+}
+
+// ── QUERIES ──────────────────────────────
+
+export const settingsQuery = `*[_type == "settings"][0]{
+  heroImage{ asset->{ url } },
+  aboutMainImage{ asset->{ url } },
+  aboutAccentImage{ asset->{ url } },
+  aboutBio
 }`;
 
 export const collectionsQuery = `*[_type == "collection"] | order(order asc){
   _id,
   name,
   tagline,
-  coverImage{asset->{url}},
-  images[]{asset->{url}},
-  slug
-}`;
-
-export const settingsQuery = `*[_type == "settings"][0]{
-  heroImage{asset->{url}},
-  aboutImage{asset->{url}},
-  aboutBio
+  desc,
+  coverImage{ asset->{ url } },
+  thumbs[]{ asset->{ url } },
+  slug,
+  order
 }`;

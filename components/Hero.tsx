@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './Hero.module.css';
 
-export default function Hero() {
+export default function Hero({ heroImageUrl }: { heroImageUrl?: string }) {
   const imgLayerRef = useRef<HTMLDivElement>(null);
   const shutterRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,7 @@ export default function Hero() {
       <div className={styles.parallaxBg} ref={bgRef}>
         <div className={styles.imgLayer} ref={imgLayerRef}>
           <img
-            src="/works/Hop-6.webp"
+            src={heroImageUrl || '/works/Hop-6.webp'}
             alt="Hero fashion editorial"
             fetchPriority="high"
             decoding="async"
