@@ -7,10 +7,11 @@ export const settings = defineType({
   fields: [
     defineField({ name: 'siteTitle', title: 'Site Title', type: 'string' }),
     defineField({
-      name: 'heroImage',
-      title: 'Hero Background Image',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'heroImages',
+      title: 'Hero Carousel Images',
+      description: 'Upload 3–6 images — they will auto-slide left and right in the hero',
+      type: 'array',
+      of: [{ type: 'image', options: { hotspot: true } }],
     }),
     defineField({
       name: 'aboutMainImage',

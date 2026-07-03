@@ -29,7 +29,7 @@ export default async function Home() {
       <Loader />
       <Nav />
       <main>
-        <Hero heroImageUrl={settings?.heroImage?.asset?.url} />
+        <Hero heroImages={settings?.heroImages?.map(img => img.asset?.url).filter((u): u is string => Boolean(u))} />
         <Marquee />
         <About
           bio={settings?.aboutBio}

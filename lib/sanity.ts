@@ -14,10 +14,10 @@ export const sanityClient = createClient({
 // ── TYPES ────────────────────────────────
 
 export interface SanitySettings {
-  heroImage?:       { asset: { url: string } };
-  aboutMainImage?:  { asset: { url: string } };
-  aboutAccentImage?:{ asset: { url: string } };
-  aboutBio?:        string;
+  heroImages?:       Array<{ asset: { url: string } }>;
+  aboutMainImage?:   { asset: { url: string } };
+  aboutAccentImage?: { asset: { url: string } };
+  aboutBio?:         string;
 }
 
 export interface SanityCollection {
@@ -34,7 +34,7 @@ export interface SanityCollection {
 // ── QUERIES ──────────────────────────────
 
 export const settingsQuery = `*[_type == "settings"][0]{
-  heroImage{ asset->{ url } },
+  heroImages[]{ asset->{ url } },
   aboutMainImage{ asset->{ url } },
   aboutAccentImage{ asset->{ url } },
   aboutBio
