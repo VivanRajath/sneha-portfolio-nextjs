@@ -203,12 +203,33 @@ export default function GalleryReel({ sanityChapters }: Props) {
               </div>
             </div>
 
-            {/* 3 vertical columns — different scroll speeds */}
+            {/* 3 vertical columns — different scroll speeds, with editorial side rails */}
             {chapter.images.length > 0 && (
-              <div
-                className={styles.gallery}
-                ref={el => { galleriesRef.current[ci] = el; }}
-              >
+              <div className={styles.galleryWrap}>
+                {/* Left rail — vertical collection / title label */}
+                <div className={styles.railLeft} aria-hidden="true">
+                  <div className={styles.railInner}>
+                    <span className={styles.railName}>
+                      {chapter.collection || chapter.title}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right rail — chapter index + frame count */}
+                <div className={styles.railRight} aria-hidden="true">
+                  <div className={styles.railInner}>
+                    <span className={styles.railNum}>{String(ci + 1).padStart(2, '0')}</span>
+                    <span className={styles.railLine} />
+                    <span className={styles.railMeta}>
+                      {String(chapter.images.length).padStart(2, '0')} Frames
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  className={styles.gallery}
+                  ref={el => { galleriesRef.current[ci] = el; }}
+                >
                 <div className={styles.col} data-col="a">
                   {colA.map((src, i) => (
                     <div key={`a-${i}`} className={styles.card}>
@@ -229,6 +250,7 @@ export default function GalleryReel({ sanityChapters }: Props) {
                       <img src={src} alt="" loading="lazy" decoding="async" />
                     </div>
                   ))}
+                </div>
                 </div>
               </div>
             )}
