@@ -27,12 +27,25 @@
   max-width: 460px;
 }
 
+/* ── TWO-COLUMN GRID ────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: start;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ── LINKS ──────────────────────────────── */
 .links {
   display: flex;
   flex-direction: column;
   border-top: 1px solid var(--maroon-border);
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .link {
@@ -97,6 +110,84 @@
   transform: translateX(8px);
 }
 
+/* ── FORM ───────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.fieldLabel {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--maroon-3);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--maroon-border);
+  padding: 0.75rem 0;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--maroon);
+  transition: border-color 0.35s var(--ease-out);
+  resize: none;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--sand-2);
+  opacity: 0.7;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-bottom-color: var(--maroon);
+}
+
+.submit {
+  align-self: flex-start;
+  margin-top: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 2.4rem;
+  background: var(--maroon);
+  color: var(--ivory);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: background 0.35s var(--ease-out), gap 0.35s var(--ease-out);
+}
+
+.submit:hover {
+  background: var(--maroon-2);
+  gap: 1.4rem;
+}
+
+.submitArrow {
+  transition: transform 0.35s var(--ease-out);
+}
+
+.submit:hover .submitArrow {
+  transform: translateX(4px);
+}
+
 /* ── BOTTOM ─────────────────────────────── */
 .bottom {
   display: flex;
@@ -127,8 +218,18 @@
 .reveal.inView { opacity: 1; transform: translateY(0); }
 
 /* ── RESPONSIVE ─────────────────────────── */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 3.5rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .section { padding: 6rem 6vw 5rem; }
+  .top { margin-bottom: 3rem; }
   .statement { font-size: clamp(2.8rem, 12vw, 5rem); }
-  .link { gap: 1.5rem; }
+  .link { gap: 1.5rem; padding: 1.8rem 0; }
   .linkValue { font-size: clamp(1rem, 4vw, 1.4rem); }
+  .submit { align-self: stretch; justify-content: center; }
 }

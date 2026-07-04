@@ -74,19 +74,28 @@ export default function GalleryReel({ sanityChapters }: Props) {
   useEffect(() => {
     const update = () => {
       const vh = window.innerHeight;
+      // Disable parallax on mobile — columns stack, so movement looks wrong
+      const mobile = window.innerWidth <= 768;
       galleriesRef.current.forEach(gallery => {
         if (!gallery) return;
+        const cols = gallery.querySelectorAll<HTMLDivElement>('[data-col]');
+        if (mobile) {
+          cols.forEach(c => { c.style.transform = ''; });
+          return;
+        }
         const rect = gallery.getBoundingClientRect();
         // Only compute when the gallery is anywhere near the viewport
         if (rect.bottom < -vh || rect.top > vh * 1.5) return;
 
         // progress grows as the gallery scrolls up through the viewport
         const progress = vh - rect.top;
+        const colA = gallery.querySelector<HTMLDivElement>('[data-col="a"]');
         const colB = gallery.querySelector<HTMLDivElement>('[data-col="b"]');
         const colC = gallery.querySelector<HTMLDivElement>('[data-col="c"]');
-        // Subtle, minute parallax — barely perceptible speed difference
-        if (colB) colB.style.transform = `translateY(${-progress * 0.05}px)`;
-        if (colC) colC.style.transform = `translateY(${progress * 0.035}px)`;
+        // Visible parallax — each column moves at a clearly different speed
+        if (colA) colA.style.transform = `translateY(${-progress * 0.04}px)`;
+        if (colB) colB.style.transform = `translateY(${-progress * 0.14}px)`;
+        if (colC) colC.style.transform = `translateY(${progress * 0.09}px)`;
       });
     };
 
@@ -114,6 +123,7 @@ export default function GalleryReel({ sanityChapters }: Props) {
 
     const trySnap = () => {
       if (snapping || dir !== 'down') return;
+      if (window.innerWidth <= 768) return; // free scroll on mobile
       const vh = window.innerHeight;
       let bestTop: number | null = null;
 

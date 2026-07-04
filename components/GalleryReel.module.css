@@ -89,27 +89,27 @@
 
 /* ── 3 VERTICAL COLUMNS (60% width, centered) ─ */
 .gallery {
-  width: 64%;
+  width: 72%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  /* row-gap  column-gap → wider horizontal space between the 3 columns */
-  gap: 1.5rem 2.75rem;
+  /* row-gap  column-gap → generous horizontal space between the 3 columns */
+  gap: 3rem 5.5rem;
   /* Big gap below so there's clear space before the next hero */
-  padding: 5rem 0 14vh;
+  padding: 6rem 0 20vh;
   align-items: start;
 }
 
 .col {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;             /* vertical gap between images */
+  gap: 3rem;               /* generous vertical gap between images */
   will-change: transform;
 }
 
-/* Small staggered offsets — subtle independence */
-.colB { margin-top: -4rem; }
-.colC { margin-top: 3rem; }
+/* Staggered offsets — clear independence between columns */
+.colB { margin-top: -6rem; }
+.colC { margin-top: 5rem; }
 
 /* ── IMAGE CARD (reduced size) ──────────── */
 .card {
@@ -136,19 +136,34 @@
 
 /* ── RESPONSIVE ─────────────────────────── */
 @media (max-width: 1100px) {
-  .gallery { width: 78%; }
+  .gallery { width: 84%; gap: 2.5rem 3.5rem; }
 }
 
 @media (max-width: 768px) {
-  .heroImgWrap { width: 88%; height: 78vh; }
+  .sectionLabel { padding: 4rem 6vw 2rem; }
+  .chapterHero { height: auto; padding: 8vh 0; }
+  .heroImgWrap { width: 90%; height: 62vh; }
+  .heroLabel { bottom: 1.5rem; left: 1.5rem; }
+  .heroCounter { bottom: 1.5rem; right: 1.5rem; }
   .heroTitle { font-size: clamp(2rem, 8vw, 3rem); }
   .gallery {
     width: 90%;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    padding: 3rem 0 10vh;
+    gap: 1.75rem 1.75rem;
+    padding: 3rem 0 12vh;
   }
-  .col { gap: 1rem; }
+  .col { gap: 1.75rem; }
+  /* Parallax offsets are set inline via JS transform; keep the stagger modest */
   .colC { display: none; }
-  .colB { margin-top: -2.5rem; }
+  .colB { margin-top: -3rem; }
+}
+
+@media (max-width: 480px) {
+  .heroImgWrap { width: 92%; height: 56vh; }
+  .gallery {
+    width: 88%;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .colB { margin-top: 0; }
 }
