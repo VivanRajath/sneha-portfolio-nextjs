@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Preload the hero image — it's above the fold and must be instant */}
         <link rel="preload" as="image" href="/works/Hop-6.webp" fetchPriority="high" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
       </body>
     </html>

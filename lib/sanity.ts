@@ -29,6 +29,51 @@ export interface SanityGallerySection {
   order?:      number;
 }
 
+export interface SanityImg { asset?: { url: string } }
+
+export interface SanityPortfolioSettings {
+  heroImage?:     SanityImg;
+  heroKicker?:    string;
+  heroTitle?:     string;
+  heroTitleEm?:   string;
+  heroSub?:       string;
+  frameCount?:    string;
+  chapterCount?:  string;
+  closingQuote?:  string;
+  closingQuoteEm?:string;
+  closingAuthor?: string;
+}
+
+export interface SanityPortfolioGridItem {
+  image?: SanityImg;
+  num?:   string;
+  story?: string;
+  tall?:  boolean;
+}
+
+export interface SanityPortfolioChapter {
+  _id:            string;
+  roman?:         string;
+  name?:          string;
+  sub?:           string;
+  order?:         number;
+  fullImage?:     SanityImg;
+  fullFrame?:     string;
+  fullTitle?:     string;
+  fullTitleEm?:   string;
+  fullBody?:      string;
+  bookNum?:       string;
+  bookLabel?:     string;
+  bookTitle?:     string;
+  bookTitleEm?:   string;
+  bookBody?:      string;
+  bookCollection?:string;
+  bookImage?:     SanityImg;
+  bookCaption?:   string;
+  gridLabel?:     string;
+  grid?:          SanityPortfolioGridItem[];
+}
+
 // ── QUERIES ──────────────────────────────
 
 export const settingsQuery = `*[_type == "settings"][0]{
@@ -45,4 +90,20 @@ export const gallerySectionsQuery = `*[_type == "gallerySection"] | order(order 
   heroImage{ asset->{ url } },
   images[]{ asset->{ url } },
   order
+}`;
+
+export const portfolioSettingsQuery = `*[_type == "portfolioSettings"][0]{
+  heroImage{ asset->{ url } },
+  heroKicker, heroTitle, heroTitleEm, heroSub,
+  frameCount, chapterCount,
+  closingQuote, closingQuoteEm, closingAuthor
+}`;
+
+export const portfolioChaptersQuery = `*[_type == "portfolioChapter"] | order(order asc){
+  _id, roman, name, sub, order,
+  fullImage{ asset->{ url } }, fullFrame, fullTitle, fullTitleEm, fullBody,
+  bookNum, bookLabel, bookTitle, bookTitleEm, bookBody, bookCollection,
+  bookImage{ asset->{ url } }, bookCaption,
+  gridLabel,
+  grid[]{ image{ asset->{ url } }, num, story, tall }
 }`;

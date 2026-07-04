@@ -168,10 +168,12 @@ export default function GalleryReel({ sanityChapters }: Props) {
       </div>
 
       {chapters.map((chapter, ci) => {
+        // Keep the reel tight — show a curated handful, the rest live in /portfolio
+        const shown = chapter.images.slice(0, 6);
         // Distribute images round-robin into 3 vertical columns
-        const colA = chapter.images.filter((_, i) => i % 3 === 0);
-        const colB = chapter.images.filter((_, i) => i % 3 === 1);
-        const colC = chapter.images.filter((_, i) => i % 3 === 2);
+        const colA = shown.filter((_, i) => i % 3 === 0);
+        const colB = shown.filter((_, i) => i % 3 === 1);
+        const colC = shown.filter((_, i) => i % 3 === 2);
         const total = chapters.length;
 
         return (
@@ -257,6 +259,15 @@ export default function GalleryReel({ sanityChapters }: Props) {
           </div>
         );
       })}
+
+      {/* Gateway to the full editorial portfolio */}
+      <div className={styles.portfolioCta}>
+        <span className={styles.portfolioCtaLabel}>The full story</span>
+        <a href="/portfolio" className={styles.portfolioCtaBtn}>
+          <span>See Portfolio</span>
+          <span className={styles.portfolioCtaArrow}>→</span>
+        </a>
+      </div>
     </section>
   );
 }
