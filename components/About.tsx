@@ -35,6 +35,25 @@ export default function About() {
           .to({}, { duration: 0.35 });
       });
 
+      // phones: one page wide — the cover flips like a card to the interview,
+      // then that page slides away to reveal her kit underneath
+      mm.add('(max-width: 860px)', () => {
+        // no 3D on phones (it renders unreliably) — the cover squashes edge-on
+        // and the interview opens out from the same edge, like a turning page
+        gsap.set(`.${s.back}`, { scaleX: 0, transformOrigin: '0% 50%' });
+        gsap.set(`.${s.cover}`, { transformOrigin: '0% 50%' });
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: `.${s.pin}`, start: 'top top', end: '+=200%', pin: true, scrub: 0.6 },
+        });
+        tl.to(`.${s.cover}`, { scaleX: 0, duration: 0.5, ease: 'power2.in' })
+          .to(`.${s.back}`, { scaleX: 1, duration: 0.5, ease: 'power2.out' })
+          .to({}, { duration: 0.5 })
+          .to(`.${s.leaf}`, { xPercent: -125, rotate: -10, duration: 0.9, ease: 'power2.in' })
+          .to(`.${s.hint}`, { opacity: 0, duration: 0.2 }, '<')
+          .from(`.${s.kitItem}`, { y: 24, opacity: 0, stagger: 0.04, duration: 0.25 }, '-=0.5')
+          .to({}, { duration: 0.5 });
+      });
+
       // every size: the cover arrives like it was just tossed on the table
       gsap.from(`.${s.book}`, {
         rotate: -6,

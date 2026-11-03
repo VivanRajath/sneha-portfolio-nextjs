@@ -334,49 +334,77 @@
   color: var(--mute);
 }
 
-/* phones: no page-turn — cover, interview and kit stack */
+/* phones: a single page — the cover flips, then slides away (see About.tsx) */
 @media (max-width: 860px) {
-  .pin {
-    height: auto;
-    padding: 20px var(--gutter) 60px;
-    perspective: none;
+  .head {
+    padding-bottom: 0;
   }
   .book {
-    --pw: 90vw;
-    width: 90vw;
-    height: auto;
-    display: grid;
-    gap: 16px;
+    --pw: min(86vw, calc((100svh - 150px) * 0.62));
+    width: var(--pw);
+    height: calc(var(--pw) / 0.62);
   }
   .page,
   .leaf {
-    position: relative;
     left: 0;
     width: 100%;
-    height: auto;
   }
   .page {
-    order: 3;
     border-left: 2px solid var(--ink);
-  }
-  .leaf {
-    display: grid;
-    gap: 16px;
-    transform: none !important;
+    padding: 14px;
+    gap: 10px;
   }
   .face {
-    position: relative;
     backface-visibility: visible;
-  }
-  .cover {
-    aspect-ratio: 0.72;
+    -webkit-backface-visibility: visible;
   }
   .back {
     transform: none;
     border-right: 2px solid var(--ink);
+    padding: 14px;
+    gap: 10px;
   }
-  .fold,
-  .hint {
+  .pin {
+    perspective: none;
+  }
+  .fold {
     display: none;
+  }
+  .mast {
+    font-size: calc(var(--pw) * 0.27);
+  }
+  .lines li {
+    font-size: calc(var(--pw) * 0.058);
+  }
+  .lines li:first-child {
+    font-size: calc(var(--pw) * 0.074);
+  }
+  .burst span {
+    font-size: calc(var(--pw) * 0.05);
+  }
+  .pageTitle {
+    font-size: calc(var(--pw) * 0.085);
+  }
+  .lede {
+    font-size: calc(var(--pw) * 0.05);
+  }
+  .q {
+    font-size: 10px;
+  }
+  .a {
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+  .pull {
+    font-size: calc(var(--pw) * 0.05);
+  }
+  .kitName {
+    font-size: 9px;
+  }
+  .kitLine {
+    font-size: 11.5px;
+  }
+  .facts .mono {
+    font-size: 9.5px;
   }
 }
