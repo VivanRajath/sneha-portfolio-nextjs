@@ -25,7 +25,7 @@ export default function About() {
       // desktop: pin, slide to centre, turn the cover like a real page
       mm.add('(min-width: 861px)', () => {
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: `.${s.pin}`, start: 'top top', end: '+=160%', pin: true, scrub: 1 },
+          scrollTrigger: { trigger: `.${s.pin}`, start: 'top top', end: '+=160%', pin: true, scrub: 1, anticipatePin: 1 },
         });
         tl.fromTo(`.${s.book}`, { xPercent: -25 }, { xPercent: 0, duration: 1, ease: 'power2.inOut' }, 0)
           .fromTo(`.${s.leaf}`, { rotateY: 0 }, { rotateY: -180, duration: 1, ease: 'power2.inOut' }, 0)
@@ -43,7 +43,7 @@ export default function About() {
         gsap.set(`.${s.back}`, { scaleX: 0, transformOrigin: '0% 50%' });
         gsap.set(`.${s.cover}`, { transformOrigin: '0% 50%' });
         const tl = gsap.timeline({
-          scrollTrigger: { trigger: `.${s.pin}`, start: 'top top', end: '+=200%', pin: true, scrub: 0.6 },
+          scrollTrigger: { trigger: `.${s.pin}`, start: 'top top', end: '+=170%', pin: true, scrub: 0.6, anticipatePin: 1 },
         });
         tl.to(`.${s.cover}`, { scaleX: 0, duration: 0.5, ease: 'power2.in' })
           .to(`.${s.back}`, { scaleX: 1, duration: 0.5, ease: 'power2.out' })

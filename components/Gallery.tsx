@@ -5,6 +5,7 @@ import Image from 'next/image';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import Deco from './Deco';
+import { lockScroll } from './SmoothScroll';
 import { moods } from '@/lib/data';
 import type { Frame } from '@/lib/frames';
 import s from './Gallery.module.css';
@@ -54,7 +55,7 @@ export default function Gallery({ frames }: { frames: Frame[] }) {
   );
   useEffect(() => {
     if (open === null) return;
-    window.__lenis?.stop();
+    lockScroll(true);
     const key = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close();
       if (e.key === 'ArrowRight') nav(1);
@@ -63,7 +64,7 @@ export default function Gallery({ frames }: { frames: Frame[] }) {
     window.addEventListener('keydown', key);
     return () => {
       window.removeEventListener('keydown', key);
-      window.__lenis?.start();
+      lockScroll(false);
     };
   }, [open, close, nav]);
 

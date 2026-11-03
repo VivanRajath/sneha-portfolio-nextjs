@@ -28,8 +28,13 @@ export default function Statement() {
         scrollTrigger: {
           trigger: `.${s.pin}`,
           start: 'top top',
-          end: () => `+=${window.innerHeight * (1.6 + quotes.length * 0.9)}`,
+          // phones get a shorter hold so the pin never feels stuck
+          end: () => {
+            const small = window.innerWidth < 861;
+            return `+=${window.innerHeight * ((small ? 1 : 1.6) + quotes.length * (small ? 0.55 : 0.9))}`;
+          },
           pin: true,
+          anticipatePin: 1,
           scrub: 1,
           invalidateOnRefresh: true,
         },

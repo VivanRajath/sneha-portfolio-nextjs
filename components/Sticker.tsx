@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useSyncExternalStore } from 'react';
 import gsap from 'gsap';
 
 type Props = {
@@ -10,12 +10,26 @@ type Props = {
   rotate?: number;
 };
 
-/** Something you can pick up and throw around. */
+const FINE = '(hover: hover) and (pointer: fine)';
+const subscribe = (cb: () => void) => {
+  const m = window.matchMedia(FINE);
+  m.addEventListener('change', cb);
+  return () => m.removeEventListener('change', cb);
+};
+
+/** Something you can pick up and throw around (with a mouse). */
 export default function Sticker({ children, className = '', style, rotate = 0 }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const pos = useRef({ x: 0, y: 0, sx: 0, sy: 0, px: 0, py: 0 });
+  // touch screens: decoration only, so a thumb landing on one still scrolls the page
+  const drag = useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(FINE).matches,
+    () => false,
+  );
 
   const down = (e: React.PointerEvent) => {
+    if (!drag || e.pointerType === 'touch') return;
     const n = el.current!;
     n.setPointerCapture(e.pointerId);
     const p = pos.current;
@@ -43,9 +57,15 @@ export default function Sticker({ children, className = '', style, rotate = 0 }:
   return (
     <div
       ref={el}
-      data-drag
+      data-drag={drag || undefined}
       className={className}
-      style={{ ...style, rotate: `${rotate}deg`, touchAction: 'none', userSelect: 'none' }}
+      style={{
+        ...style,
+        rotate: `${rotate}deg`,
+        touchAction: drag ? 'none' : 'auto',
+        pointerEvents: drag ? undefined : 'none',
+        userSelect: 'none',
+      }}
       onPointerDown={down}
       onPointerMove={move}
       onPointerUp={up}
