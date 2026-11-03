@@ -1,0 +1,105 @@
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.kinds {
+  border: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.kinds legend {
+  color: var(--mute);
+  margin-bottom: 10px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 7px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.chip:hover {
+  background: rgba(17, 17, 16, 0.06);
+}
+
+.chipOn,
+.chipOn:hover {
+  background: var(--lime);
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field > span {
+  color: var(--mute);
+}
+
+.field input,
+.field textarea {
+  font-family: var(--serif);
+  font-size: clamp(22px, 2vw, 32px);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  padding: 6px 0 8px;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(17, 17, 16, 0.28);
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--satin);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.send {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 15px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.send span {
+  transition: transform 0.5s var(--ease);
+}
+
+.send:hover {
+  background: var(--satin);
+}
+
+.send:hover span {
+  transform: translateX(6px);
+}

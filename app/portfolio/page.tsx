@@ -1,33 +1,23 @@
 import type { Metadata } from 'next';
-import {
-  sanityClient,
-  portfolioSettingsQuery,
-  portfolioChaptersQuery,
-} from '@/lib/sanity';
-import type { SanityPortfolioSettings, SanityPortfolioChapter } from '@/lib/sanity';
-import PortfolioClient from '@/components/portfolio/PortfolioClient';
-import { mapSettings, mapChapters } from '@/components/portfolio/portfolioData';
+import Nav from '@/components/Nav';
+import Contact from '@/components/Contact';
+import Gallery from '@/components/Gallery';
+import { allFrames } from '@/lib/frames';
 
 export const metadata: Metadata = {
-  title: 'Portfolio — Sneha, Fashion Designer',
-  description:
-    'The complete portfolio of Sneha — a visual narrative spanning editorial collections, heritage couture and street fashion storytelling.',
+  title: 'Portfolio — Sneha Sridhar',
+  description: 'Every frame from Sneha Sridhar’s shoots, sorted by mood.',
 };
 
 export default async function PortfolioPage() {
-  let settings: SanityPortfolioSettings | null = null;
-  let chapters: SanityPortfolioChapter[] = [];
-  try {
-    [settings, chapters] = await Promise.all([
-      sanityClient.fetch<SanityPortfolioSettings>(portfolioSettingsQuery),
-      sanityClient.fetch<SanityPortfolioChapter[]>(portfolioChaptersQuery),
-    ]);
-  } catch {}
-
+  const frames = await allFrames();
   return (
-    <PortfolioClient
-      settings={mapSettings(settings)}
-      chapters={mapChapters(chapters || [])}
-    />
+    <>
+      <Nav />
+      <main>
+        <Gallery frames={frames} />
+        <Contact />
+      </main>
+    </>
   );
 }

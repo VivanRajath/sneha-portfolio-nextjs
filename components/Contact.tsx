@@ -1,154 +1,115 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import styles from './Contact.module.css';
 
-const links = [
-  {
-    id: 'contact-email',
-    label: 'Email',
-    value: 'snehasridhar.fad.63@gmail.com',
-    href: 'mailto:snehasridhar.fad.63@gmail.com',
-  },
-  {
-    id: 'contact-ig',
-    label: 'Instagram',
-    value: '@museonzidray',
-    href: 'https://www.instagram.com/museonzidray',
-  },
-  {
-    id: 'contact-phone',
-    label: 'Phone',
-    value: '+91 93536 16017',
-    href: 'tel:+919353616017',
-  },
-];
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import Clock from './Clock';
+import ContactForm from './ContactForm';
+import Deco from './Deco';
+import { Star } from './objects';
+import { site } from '@/lib/data';
+import s from './Contact.module.css';
 
-const CONTACT_EMAIL = 'snehasridhar.fad.63@gmail.com';
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Contact() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const root = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) e.target.classList.add(styles.inView);
-        });
-      },
-      { threshold: 0.08 }
-    );
-    sectionRef.current?.querySelectorAll(`.${styles.reveal}`).forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useGSAP(
+    () => {
+      gsap.from(`.${s.big} .${s.ch}`, {
+        yPercent: 100,
+        duration: 1.3,
+        ease: 'expo.out',
+        stagger: 0.04,
+        scrollTrigger: { trigger: `.${s.big}`, start: 'top 85%' },
+      });
+      gsap.from(`.${s.say}`, {
+        clipPath: 'inset(0 100% 0 0)',
+        duration: 1.4,
+        ease: 'power3.inOut',
+        scrollTrigger: { trigger: `.${s.big}`, start: 'top 60%' },
+      });
+    },
+    { scope: root },
+  );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  const top = () => {
+    if (window.__lenis) window.__lenis.scrollTo(0, { duration: 2 });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const subject = encodeURIComponent(`New enquiry from ${form.name || 'your website'}`);
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    );
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
-  };
+  const words = [...site.vibe, 'Bengaluru', 'Made with jasmine'];
 
   return (
-    <section className={styles.section} id="contact" ref={sectionRef}>
-      {/* Top: tag + statement */}
-      <div className={styles.top}>
-        <div className={`section-tag ${styles.reveal}`}>
-          <span className="dot" /> Open for Collaborations
+    <section ref={root} className={s.wrap} id="contact">
+      <div className={s.marquee} aria-hidden>
+        <div className={s.track}>
+          {[0, 1].map((k) => (
+            <span key={k} className={s.group}>
+              {words.map((w) => (
+                <span key={w + k} className={s.mItem}>
+                  {w} <Star className={s.mStar} fill="#111110" />
+                </span>
+              ))}
+            </span>
+          ))}
         </div>
-        <h2 className={`${styles.statement} ${styles.reveal}`}>
-          Let&apos;s make<br />
-          <em>something new.</em>
+      </div>
+
+      <div className={`mono ${s.label}`}>
+        <span>Epilogue</span>
+        <span>(the next chapter could be yours)</span>
+      </div>
+
+      <div className={s.stage}>
+        <Deco
+          items={[
+            { src: '/accessories/instant-camera.svg', top: '-8%', left: '2%', size: 'clamp(64px, 7vw, 110px)', anim: 'float', drift: 0.4, rotate: -12, mobile: true },
+            { src: '/accessories/bracelet.webp', bottom: '-30%', left: '36%', size: 'clamp(54px, 5vw, 86px)', anim: 'swing', drift: 0.5 },
+            { src: '/accessories/heart-glasses.webp', top: '-16%', right: '3%', size: 'clamp(90px, 9vw, 150px)', anim: 'wiggle', drift: 0.6, rotate: -8 },
+            { src: '/accessories/scrunchie.webp', bottom: '-24%', right: '20%', size: 'clamp(54px, 5vw, 84px)', anim: 'spin', drift: 0.3 },
+            { src: '/accessories/headphones.webp', top: '30%', left: '-1%', size: 'clamp(56px, 5vw, 86px)', anim: 'float', drift: 0.7 },
+            { src: '/accessories/digicam.svg', bottom: '-34%', left: '8%', size: 'clamp(64px, 6vw, 100px)', anim: 'pulse', drift: 0.5 },
+          ]}
+        />
+        <h2 className={s.big} aria-label="Let's talk">
+          {'Let’s Talk'.split('').map((c, i) => (
+            <span key={i} className={s.mask}>
+              <span className={s.ch}>{c === ' ' ? ' ' : c}</span>
+            </span>
+          ))}
         </h2>
-        <p className={`${styles.sub} ${styles.reveal}`}>
-          Whether it&apos;s a shoot, a concept, or a full creative direction — reach out and let&apos;s begin.
-        </p>
+        <span className={`script ${s.say}`}>or just say hi</span>
       </div>
 
-      {/* Two columns: contact details (left) + form (right) */}
-      <div className={styles.grid}>
-        {/* Left — contact + instagram details */}
-        <div className={styles.details}>
-          <div className={styles.links}>
-            {links.map((l, i) => (
-              <a
-                key={l.id}
-                id={l.id}
-                href={l.href}
-                className={`${styles.link} ${styles.reveal}`}
-                target={l.href.startsWith('http') ? '_blank' : undefined}
-                rel={l.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                style={{ transitionDelay: `${i * 0.1}s` }}
-              >
-                <span className={styles.linkLabel}>{l.label}</span>
-                <span className={styles.linkValue}>{l.value}</span>
-                <span className={styles.linkArrow}>→</span>
-              </a>
-            ))}
+      <div className={s.split}>
+        <div className={s.info}>
+          <a href={`mailto:${site.email}`} className={s.email}>
+            {site.email}
+          </a>
+          <div className={s.socials}>
+            <a href={site.instagram.url} target="_blank" rel="noreferrer">
+              Instagram ↗
+            </a>
           </div>
-
-          <div className={`${styles.bottom} ${styles.reveal}`}>
-            <span>Bengaluru, India</span>
-            <span className={styles.bottomDot} />
-            <span>Available for Remote &amp; On-site</span>
-          </div>
+          <p className={`mono ${s.note}`}>
+            Editorials, campaigns, collabs, concept shoots — or just a hello. Tell me the feeling; I’ll build the story.
+          </p>
         </div>
-
-        {/* Right — contact form */}
-        <form className={`${styles.form} ${styles.reveal}`} onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label htmlFor="cf-name" className={styles.fieldLabel}>Name</label>
-            <input
-              id="cf-name"
-              name="name"
-              type="text"
-              required
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Your name"
-              className={styles.input}
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="cf-email" className={styles.fieldLabel}>Email</label>
-            <input
-              id="cf-email"
-              name="email"
-              type="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              placeholder="you@email.com"
-              className={styles.input}
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="cf-message" className={styles.fieldLabel}>Message</label>
-            <textarea
-              id="cf-message"
-              name="message"
-              required
-              rows={5}
-              value={form.message}
-              onChange={handleChange}
-              placeholder="Tell me about your project…"
-              className={styles.textarea}
-            />
-          </div>
-
-          <button type="submit" className={styles.submit}>
-            Send Message <span className={styles.submitArrow}>→</span>
-          </button>
-        </form>
+        <ContactForm />
       </div>
+
+      <footer className={`mono ${s.foot}`}>
+        <span>© {new Date().getFullYear()} {site.name}</span>
+        <span>
+          {site.city} — <Clock />
+        </span>
+        <button onClick={top} className="mono">
+          Back to the prologue ↑
+        </button>
+      </footer>
     </section>
   );
 }

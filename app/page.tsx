@@ -1,45 +1,58 @@
 import Loader from '@/components/Loader';
 import Nav from '@/components/Nav';
 import Hero from '@/components/Hero';
-import Marquee from '@/components/Marquee';
 import About from '@/components/About';
-import GalleryReel from '@/components/GalleryReel';
-import Philosophy from '@/components/Philosophy';
+import Statement from '@/components/Statement';
+import MoodWheel from '@/components/MoodWheel';
+import Work, { type WorkItem } from '@/components/Work';
+import Services from '@/components/Services';
 import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
-import { sanityClient, settingsQuery, gallerySectionsQuery } from '@/lib/sanity';
-import type { SanitySettings, SanityGallerySection } from '@/lib/sanity';
+import StoryProgress from '@/components/StoryProgress';
+import { alsoStyled, chapters } from '@/lib/data';
+import { workImages } from '@/lib/images';
 
-export default async function Home() {
-  let settings: SanitySettings | null = null;
-  let gallerySections: SanityGallerySection[] = [];
-
-  try {
-    [settings, gallerySections] = await Promise.all([
-      sanityClient.fetch<SanitySettings>(settingsQuery),
-      sanityClient.fetch<SanityGallerySection[]>(gallerySectionsQuery),
-    ]);
-  } catch {
-    // Falls back to static content if Sanity is unreachable
-  }
+export default function Home() {
+  const items: WorkItem[] = [
+    ...chapters.map((c, i) => ({
+      slug: c.slug,
+      index: String(i + 1).padStart(3, '0'),
+      name: c.title,
+      tagline: c.tagline,
+      kind: c.kind,
+      year: c.year,
+      color: c.palette.bg,
+      ink: c.palette.fg,
+      ig: c.ig,
+      images: workImages(c.slug),
+    })),
+    ...alsoStyled.map((x, i) => ({
+      slug: x.slug,
+      index: String(chapters.length + i + 1).padStart(3, '0'),
+      name: x.title,
+      tagline: x.note,
+      kind: x.with,
+      year: '',
+      color: '#D2FF3C',
+      ink: '#111110',
+      ig: x.ig,
+      images: workImages(x.slug),
+    })),
+  ];
 
   return (
     <>
       <Loader />
       <Nav />
       <main>
-        <Hero heroImages={settings?.heroImages?.map(img => img.asset?.url).filter((u): u is string => Boolean(u))} />
-        <Marquee />
-        <About
-          bio={settings?.aboutBio}
-          mainImageUrl={settings?.aboutMainImage?.asset?.url}
-          accentImageUrl={settings?.aboutAccentImage?.asset?.url}
-        />
-        <GalleryReel sanityChapters={gallerySections} />
-        <Philosophy />
+        <Hero />
+        <About />
+        <Statement />
+        <MoodWheel />
+        <Work items={items} />
+        <Services />
         <Contact />
       </main>
-      <Footer />
+      <StoryProgress />
     </>
   );
 }

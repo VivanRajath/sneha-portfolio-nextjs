@@ -1,194 +1,178 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import styles from './Hero.module.css';
 
-const FALLBACK = [
-  '/works/Hop-6.webp',
-  '/works/Hop-1-2.webp',
-  '/works/_MG_0245.webp',
-];
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import Sticker from './Sticker';
+import Deco from './Deco';
+import Clock from './Clock';
+import { heroFrames, site } from '@/lib/data';
+import s from './Hero.module.css';
 
-export default function Hero({ heroImages }: { heroImages?: string[] }) {
-  const contentRef     = useRef<HTMLDivElement>(null);
-  const carouselRef    = useRef<HTMLDivElement>(null);
-  const firstImgRef    = useRef<HTMLImageElement>(null);
-  const recTimerRef    = useRef<HTMLSpanElement>(null);
+const N = heroFrames.length;
 
-  const [shutterOpen,  setShutterOpen]  = useState(false);
-  const [focusing,     setFocusing]     = useState(false);
-  const [focusLocked,  setFocusLocked]  = useState(false);
-  const [cameraFaded,  setCameraFaded]  = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+/** A retro TV you can actually flip channels on — her name lives on the screen. */
+export default function Hero() {
+  const root = useRef<HTMLElement>(null);
+  const [ch, setCh] = useState(0);
+  const [noise, setNoise] = useState(false);
+  const [knob, setKnob] = useState(0);
+  const touched = useRef(false);
+  const busy = useRef(false);
 
-  const images = heroImages && heroImages.length > 0 ? heroImages : FALLBACK;
-
-  // ── Camera shutter sequence ──────────────
-  useEffect(() => {
-    const t1 = setTimeout(() => {
-      setShutterOpen(true);
-      setFocusing(true);
-    }, 600);
-
-    const t2 = setTimeout(() => {
-      setFocusing(false);
-      setFocusLocked(true);
-      // Unblur first image & subtle zoom-in
-      if (firstImgRef.current)  firstImgRef.current.style.filter = 'blur(0px)';
-      if (carouselRef.current)  carouselRef.current.style.transform = 'scale(1.06)';
-    }, 1800);
-
-    const t3 = setTimeout(() => {
-      contentRef.current?.classList.add(styles.revealed);
-    }, 2000);
-
-    // Fade out the entire camera UI overlay once content is visible
-    const t4 = setTimeout(() => setCameraFaded(true), 3600);
-
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+  const tune = useCallback((dir: 1 | -1) => {
+    if (busy.current) return;
+    busy.current = true;
+    setNoise(true);
+    setKnob((k) => k + dir * 30);
+    window.setTimeout(() => setCh((c) => (c + dir + N) % N), 180);
+    window.setTimeout(() => {
+      setNoise(false);
+      busy.current = false;
+    }, 420);
   }, []);
 
-  // ── REC timer ───────────────────────────
+  const press = (dir: 1 | -1) => {
+    touched.current = true;
+    tune(dir);
+  };
+
+  // it channel-surfs by itself until someone grabs the remote
   useEffect(() => {
-    if (!shutterOpen) return;
-    let secs = 1;
-    const id = setInterval(() => {
-      secs++;
-      const mm = String(Math.floor(secs / 60)).padStart(2, '0');
-      const ss = String(secs % 60).padStart(2, '0');
-      if (recTimerRef.current) recTimerRef.current.textContent = `REC [00:${mm}:${ss}]`;
-    }, 1000);
-    return () => clearInterval(id);
-  }, [shutterOpen]);
+    const id = window.setInterval(() => {
+      if (!touched.current) tune(1);
+    }, 3200);
+    return () => window.clearInterval(id);
+  }, [tune]);
 
-  // ── Carousel auto-advance ────────────────
-  useEffect(() => {
-    if (images.length <= 1) return;
-    const id = setInterval(() => {
-      setCurrentSlide(p => (p + 1) % images.length);
-    }, 5000);
-    return () => clearInterval(id);
-  }, [currentSlide, images.length]);
+  useGSAP(
+    () => {
+      const q = gsap.utils.selector(root);
+      gsap.set(q(`.${s.ch}`), { yPercent: 110 });
+      gsap.set(q(`.${s.tv}`), { y: 50, opacity: 0 });
+      gsap.set(q(`.${s.reveal}`), { opacity: 0, y: 10 });
+      gsap.set(q(`.${s.stickerSlot}`), { scale: 0 });
 
-  const prev = () => setCurrentSlide(p => (p - 1 + images.length) % images.length);
-  const next = () => setCurrentSlide(p => (p + 1) % images.length);
+      const intro = () =>
+        gsap
+          .timeline()
+          .to(q(`.${s.tv}`), { y: 0, opacity: 1, duration: 1.1, ease: 'expo.out' })
+          .to(q(`.${s.ch}`), { yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: 0.035 }, 0.35)
+          .to(q(`.${s.reveal}`), { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', stagger: 0.06 }, 0.7)
+          .to(q(`.${s.stickerSlot}`), { scale: 1, duration: 0.7, ease: 'back.out(2.4)', stagger: 0.1 }, 1);
 
-  const shutterClasses = [
-    styles.cameraShutter,
-    shutterOpen  ? styles.shutterOpen  : '',
-    focusing     ? styles.focusing     : '',
-    focusLocked  ? styles.focusLocked  : '',
-    cameraFaded  ? styles.cameraFaded  : '',
-  ].filter(Boolean).join(' ');
+      if (window.__booted) {
+        intro();
+        return;
+      }
+      window.addEventListener('loader:done', intro, { once: true });
+      return () => window.removeEventListener('loader:done', intro);
+    },
+    { scope: root },
+  );
 
   return (
-    <section className={styles.hero} id="hero">
+    <section
+      ref={root}
+      className={s.hero}
+      id="top"
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') press(1);
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') press(-1);
+      }}
+    >
+      <Deco
+        items={[
+          { src: '/accessories/digicam.svg', top: '40%', left: '1.5%', size: 'clamp(64px, 7vw, 112px)', anim: 'float', drift: 0.6, mobile: true },
+          { src: '/accessories/headphones.webp', bottom: '20%', right: '1.5%', size: 'clamp(64px, 6.5vw, 104px)', anim: 'wiggle', drift: 0.9, rotate: 10 },
+        ]}
+      />
 
-      {/* ── Carousel background ─────────────── */}
-      <div className={styles.carouselOuter}>
-        <div
-          className={styles.carouselRef}
-          ref={carouselRef}
-          style={{ transition: 'transform 0.7s cubic-bezier(0.34,1.56,0.64,1)' }}
-        >
-          <div
-            className={styles.carouselTrack}
-            style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-          >
-            {images.map((src, i) => (
-              <div key={src + i} className={styles.slide}>
-                <img
-                  ref={i === 0 ? firstImgRef : undefined}
-                  src={src}
-                  alt={`Hero slide ${i + 1}`}
-                  fetchPriority={i === 0 ? 'high' : 'auto'}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  decoding="async"
-                  style={i === 0 ? {
-                    filter: 'blur(20px)',
-                    transition: 'filter 1.4s cubic-bezier(0.22,1,0.36,1)',
-                  } : undefined}
-                />
-              </div>
+      <div className={s.tv}>
+        <div className={s.body}>
+          {/* ── the screen ── */}
+          <div className={s.screen}>
+            {heroFrames.map((f, i) => (
+              <Image
+                key={f.src}
+                src={f.src}
+                alt=""
+                fill
+                sizes="(max-width: 760px) 80vw, 60vw"
+                loading="eager"
+                className={s.frame}
+                style={{ opacity: i === ch ? 1 : 0 }}
+              />
             ))}
+            <span className={s.shade} />
+            <span className={s.scan} />
+            <span className={`${s.static} ${noise ? s.staticOn : ''}`} />
+
+            <div className={s.title}>
+              <h1 className={s.name} aria-label={site.name}>
+                {site.name.split('').map((c, i) => (
+                  <span key={i} className={s.mask}>
+                    <span className={s.ch}>{c === ' ' ? ' ' : c}</span>
+                  </span>
+                ))}
+              </h1>
+              <p className={`mono ${s.role} ${s.reveal}`}>{site.role}</p>
+            </div>
+
+            <span className={`mono ${s.osdTop}`}>
+              ● REC <Clock />
+            </span>
+            <span className={`mono ${s.osdCh}`}>CH {String(ch + 1).padStart(2, '0')}</span>
+            <span className={`mono ${s.osd}`}>{heroFrames[ch].label}</span>
           </div>
+
+          {/* ── the control panel ── */}
+          <div className={s.panel}>
+            <span className={`mono ${s.brand}`}>SNEHA·TV</span>
+            <button
+              className={s.knob}
+              style={{ rotate: `${knob}deg` }}
+              onClick={() => press(1)}
+              aria-label="Turn the dial to the next channel"
+            >
+              <span className={s.notch} />
+            </button>
+            <div className={s.btns}>
+              <button className={`mono ${s.btn}`} onClick={() => press(1)} aria-label="Next channel">
+                CH ▲
+              </button>
+              <button className={`mono ${s.btn}`} onClick={() => press(-1)} aria-label="Previous channel">
+                CH ▼
+              </button>
+            </div>
+            <span className={s.grille} />
+            <span className={s.led} />
+          </div>
+        </div>
+        <div className={s.legs}>
+          <span />
+          <span />
+        </div>
+
+        <div className={`${s.stickerSlot} ${s.sGlasses}`}>
+          <Sticker rotate={-8}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/accessories/heart-glasses.webp" alt="" draggable={false} style={{ width: '100%' }} />
+          </Sticker>
+        </div>
+        <div className={`${s.stickerSlot} ${s.sPencil}`}>
+          <Sticker rotate={-4}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/accessories/pencil.webp" alt="" draggable={false} style={{ height: '100%', display: 'block', margin: '0 auto' }} />
+          </Sticker>
         </div>
       </div>
 
-      {/* ── Camera UI (fades out after reveal) ─ */}
-      <div className={shutterClasses} id="cameraShutter">
-        <div className={`${styles.shutterBlade} ${styles.bladeTop}`} />
-        <div className={`${styles.shutterBlade} ${styles.bladeBottom}`} />
-
-        <div className={styles.viewfinderGrid}>
-          <div className={`${styles.vfCorner} ${styles.topLeft}`} />
-          <div className={`${styles.vfCorner} ${styles.topRight}`} />
-          <div className={`${styles.vfCorner} ${styles.bottomLeft}`} />
-          <div className={`${styles.vfCorner} ${styles.bottomRight}`} />
-
-          <div className={styles.autofocus}>
-            <div className={`${styles.afBracket} ${styles.afLeft}`} />
-            <div className={`${styles.afBracket} ${styles.afRight}`} />
-            <div className={styles.afDot} />
-          </div>
-
-          <div className={`${styles.readout} ${styles.readoutTL}`}>FCON 1/250 f/2.8</div>
-          <div className={`${styles.readout} ${styles.readoutTR}`}>
-            <span className={styles.recIcon} />
-            <span ref={recTimerRef}>REC [00:00:01]</span>
-          </div>
-          <div className={`${styles.readout} ${styles.readoutBL}`}>ISO 400</div>
-          <div className={`${styles.readout} ${styles.readoutBR}`}>AF-C [LOCK]</div>
-        </div>
-      </div>
-
-      <div className={styles.overlay} />
-
-      {/* ── Text content ────────────────────── */}
-      <div className={styles.content} ref={contentRef} id="heroContent">
-        <div className={styles.heroTag}>
-          <span className="dot" /> Creative Director &amp; Fashion Designer
-        </div>
-        <h1 className={styles.title}>
-          <span className={styles.titleLine}>Fashion</span>
-          <span className={`${styles.titleLine} ${styles.italic}`}>is a</span>
-          <span className={styles.titleLine}>Statement.</span>
-        </h1>
-        <p className={styles.sub}>
-          Where tradition meets rebellion.<br />
-          Crafting stories through silhouette &amp; soul.
-        </p>
-        <div className={styles.cta}>
-          <a href="#gallery" className="btn-primary" id="hero-work-btn">
-            <span>View Work</span>
-          </a>
-          <a href="#about" className="btn-ghost" id="hero-about-btn">My Story</a>
-        </div>
-      </div>
-
-      {/* ── Carousel nav (appears after camera fades) ─ */}
-      {images.length > 1 && (
-        <>
-          <button className={styles.navPrev} onClick={prev} aria-label="Previous slide">
-            <span />
-          </button>
-          <button className={styles.navNext} onClick={next} aria-label="Next slide">
-            <span />
-          </button>
-          <div className={styles.slideCounter}>
-            {String(currentSlide + 1).padStart(2, '0')} / {String(images.length).padStart(2, '0')}
-          </div>
-        </>
-      )}
-
-      {/* ── Scroll indicator ────────────────── */}
-      <div className={styles.scrollIndicator}>
-        <div className={styles.scrollLine} />
-        <span>scroll</span>
-      </div>
-
-      <div className={styles.bottomText}>
-        <span>© 2025</span>
-        <span>Bengaluru, India</span>
+      <div className={`mono ${s.under} ${s.reveal}`}>
+        <span>Prologue — a story in five chapters</span>
+        <span className={s.hint}>Flip the channels ▲▼</span>
+        <span>Scroll to read ↓</span>
       </div>
     </section>
   );

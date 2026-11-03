@@ -1,115 +1,149 @@
 'use client';
-import { useEffect, useRef } from 'react';
-import styles from './About.module.css';
 
-const stats = [
-  { num: 32, label: 'Editorials', suffix: '+' },
-  { num: 3,  label: 'Collections', suffix: '' },
-  { num: 4,  label: 'Years',       suffix: '+' },
-];
+import { useRef } from 'react';
+import Image from 'next/image';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+import ChapterTitle from './ChapterTitle';
+import Deco from './Deco';
+import { about, chapters, site, tools } from '@/lib/data';
+import s from './About.module.css';
 
-const skills = ['Styling', 'Creative Direction', 'Costume Design', 'Editorial', 'Concept Development'];
+gsap.registerPlugin(ScrollTrigger);
 
-interface AboutProps {
-  bio?: string;
-  mainImageUrl?: string;
-  accentImageUrl?: string;
-}
+const epoch = chapters.find((c) => c.slug === 'metallic-epoch');
 
-export default function About({ bio, mainImageUrl, accentImageUrl }: AboutProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const statsRef   = useRef<HTMLDivElement>(null);
-  const numsRef    = useRef<(HTMLSpanElement | null)[]>([]);
+/** "Who she is", told as a magazine issue: the cover turns open into the interview + her kit. */
+export default function About() {
+  const root = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add(styles.inView);
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
 
-          if (entry.target === statsRef.current && !statsRef.current?.dataset.animated) {
-            statsRef.current!.dataset.animated = 'true';
-            stats.forEach((s, i) => {
-              const el = numsRef.current[i];
-              if (!el) return;
-              const start = performance.now();
-              const dur   = 1400;
-              const tick  = (now: number) => {
-                const p = Math.min((now - start) / dur, 1);
-                const e = 1 - Math.pow(1 - p, 3);
-                el.textContent = String(Math.round(e * s.num)) + (p >= 1 ? s.suffix : '');
-                if (p < 1) requestAnimationFrame(tick);
-              };
-              requestAnimationFrame(tick);
-            });
-          }
-          observer.unobserve(entry.target);
+      // desktop: pin, slide to centre, turn the cover like a real page
+      mm.add('(min-width: 861px)', () => {
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: `.${s.pin}`, start: 'top top', end: '+=160%', pin: true, scrub: 1 },
         });
-      },
-      { threshold: 0.15 }
-    );
+        tl.fromTo(`.${s.book}`, { xPercent: -25 }, { xPercent: 0, duration: 1, ease: 'power2.inOut' }, 0)
+          .fromTo(`.${s.leaf}`, { rotateY: 0 }, { rotateY: -180, duration: 1, ease: 'power2.inOut' }, 0)
+          .fromTo(`.${s.fold}`, { opacity: 0.6 }, { opacity: 0, duration: 0.6 }, 0.4)
+          .from(`.${s.kitItem}`, { y: 30, opacity: 0, stagger: 0.05, duration: 0.3 }, 0.7)
+          .to(`.${s.hint}`, { opacity: 0, duration: 0.2 }, 0.5)
+          .to({}, { duration: 0.35 });
+      });
 
-    sectionRef.current?.querySelectorAll(`.${styles.reveal}`).forEach(el => observer.observe(el));
-    if (statsRef.current) observer.observe(statsRef.current);
-    return () => observer.disconnect();
-  }, []);
+      // every size: the cover arrives like it was just tossed on the table
+      gsap.from(`.${s.book}`, {
+        rotate: -6,
+        y: 80,
+        opacity: 0,
+        duration: 1.4,
+        ease: 'expo.out',
+        scrollTrigger: { trigger: `.${s.pin}`, start: 'top 80%' },
+      });
+
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
 
   return (
-    <section className={styles.about} id="about" ref={sectionRef}>
-      {/* Decorative background number */}
-      <div className={styles.bgNum} aria-hidden>01</div>
+    <section ref={root} className={s.wrap} id="about">
+      <Deco
+        items={[
+          { src: '/accessories/bracelet.webp', top: '60px', right: '4%', size: 'clamp(64px, 6vw, 100px)', anim: 'swing', drift: 0.7 },
+          { src: '/accessories/flower-charm.webp', bottom: '30px', left: '4%', size: 'clamp(52px, 5vw, 80px)', anim: 'wiggle', drift: 0.5, mobile: true },
+        ]}
+      />
 
-      {/* Full-width headline */}
-      <div className={styles.intro}>
-        <div className={`section-tag ${styles.reveal}`}>
-          <span className="dot" /> Chapter One
-        </div>
-        <h2 className={`${styles.headline} ${styles.reveal}`}>
-          The girl who<br /><em>rewrote</em> the rules.
-        </h2>
+      <div className={s.head}>
+        <ChapterTitle n="01" title="Who she" script="is" line="Her story, as an issue of its own." />
       </div>
 
-      {/* Split: images left, text right */}
-      <div className={styles.split}>
-        <div className={`${styles.imgCol} ${styles.reveal}`}>
-          <div className={styles.mainImg}>
-            <img src={mainImageUrl || '/works/Hop-6-2.webp'} alt="Sneha" loading="eager" />
-          </div>
-          <div className={styles.accentImg}>
-            <img src={accentImageUrl || '/works/Hop-4-2.webp'} alt="Editorial" loading="eager" />
-          </div>
-        </div>
+      <div className={s.pin}>
+        <div className={s.book}>
+          {/* ── right page (under the cover): in her kit ── */}
+          <article className={`${s.page} ${s.kit}`}>
+            <header className={s.pageHead}>
+              <span className="mono">p. 03</span>
+              <h3 className={s.pageTitle}>
+                In her <em>kit</em>
+              </h3>
+            </header>
+            <ul className={s.kitGrid}>
+              {tools.map((t) => (
+                <li key={t.id} className={s.kitItem}>
+                  <span className={s.kitImg}>
+                    <Image src={t.img} alt={t.name} fill sizes="120px" className={s.kitPic} />
+                  </span>
+                  <span className={`mono ${s.kitName}`}>{t.name}</span>
+                  <span className={s.kitLine}>{t.line}</span>
+                </li>
+              ))}
+            </ul>
+            <dl className={s.facts}>
+              {about.facts.slice(0, 3).map(([k, v]) => (
+                <div key={k}>
+                  <dt className="mono">{k}</dt>
+                  <dd className="mono">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </article>
 
-        <div className={styles.textCol}>
-          <p className={`${styles.lead} ${styles.reveal}`}>
-            {bio || 'Fashion became language for me — every fold a sentence, every silhouette a story. I grew up in Bengaluru where tradition and rebellion share the same sidewalk.'}
-          </p>
-
-          <div className={`${styles.skillList} ${styles.reveal}`}>
-            {skills.map((sk, i) => (
-              <div key={sk} className={styles.skillRow} style={{ transitionDelay: `${i * 0.06}s` }}>
-                <span className={styles.skillRule} />
-                <span className={styles.skillName}>{sk}</span>
+          {/* ── the leaf: front = cover, back = the interview ── */}
+          <div className={s.leaf}>
+            <div className={`${s.face} ${s.cover}`}>
+              <Image src={about.cover.image} alt="Sneha Sridhar, cover story" fill sizes="(max-width: 860px) 90vw, 36vw" className={s.coverImg} />
+              <span className={s.coverShade} />
+              <div className={s.masthead}>
+                <span className={`mono ${s.issue}`}>Issue 01 · {site.city} · 2026</span>
+                <span className={s.mast}>SNEHA</span>
               </div>
-            ))}
+              <ul className={s.lines}>
+                {about.cover.lines.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+              <span className={s.burst}>
+                <span>NEW</span>
+              </span>
+              <div className={s.barcode}>
+                <span className={s.bars} />
+                <span className="mono">₹ priceless</span>
+              </div>
+              <span className={s.fold} />
+            </div>
+
+            <div className={`${s.face} ${s.back}`}>
+              <header className={s.pageHead}>
+                <span className="mono">p. 02</span>
+                <h3 className={s.pageTitle}>
+                  The <em>interview</em>
+                </h3>
+              </header>
+              <p className={s.lede}>{about.intro}</p>
+              <div className={s.qa}>
+                {about.interview.map((x) => (
+                  <div key={x.q}>
+                    <p className={s.q}>{x.q}</p>
+                    <p className={s.a}>{x.a}</p>
+                  </div>
+                ))}
+              </div>
+              {epoch?.quote && (
+                <blockquote className={s.pull}>
+                  “{epoch.quote.text}”
+                  <cite className="mono">— Sneha</cite>
+                </blockquote>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Stats row */}
-      <div className={styles.statsBar} ref={statsRef}>
-        {stats.map((s, i) => (
-          <div key={s.label} className={styles.statCell}>
-            <span
-              className={styles.statNum}
-              ref={el => { numsRef.current[i] = el; }}
-            >
-              0
-            </span>
-            <span className={styles.statLabel}>{s.label}</span>
-          </div>
-        ))}
+        <p className={`mono ${s.hint}`}>Keep scrolling — the cover opens</p>
       </div>
     </section>
   );

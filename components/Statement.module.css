@@ -1,0 +1,94 @@
+.wrap {
+  position: relative;
+}
+
+.head {
+  padding: clamp(50px, 9vh, 100px) var(--gutter) 0;
+}
+
+.pin {
+  position: relative;
+  height: 100svh;
+  padding: 0 var(--gutter);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.stack {
+  position: relative;
+  display: grid;
+  align-items: center;
+}
+
+.stack > * {
+  grid-area: 1 / 1;
+}
+
+.text {
+  font-family: var(--sans);
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: clamp(30px, 4.6vw, 80px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-indent: 18%;
+  transform-origin: center;
+}
+
+.w {
+  display: inline;
+}
+
+.hl {
+  font-family: var(--serif);
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  color: var(--satin);
+  font-size: 1.12em;
+}
+
+.quote {
+  opacity: 0;
+  text-align: center;
+  justify-self: center;
+  width: 100%;
+}
+
+.quote p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(40px, 6.4vw, 118px);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  max-width: 16ch;
+  margin: 0 auto;
+}
+
+.quote cite {
+  display: block;
+  margin-top: 22px;
+  font-style: normal;
+  color: var(--satin);
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(18px, 3vh, 32px);
+}
+
+.sq {
+  width: 9px;
+  height: 9px;
+  background: var(--ink);
+}
+
+@media (max-width: 760px) {
+  .text {
+    text-indent: 0;
+  }
+}
